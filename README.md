@@ -116,6 +116,8 @@ To add a genuinely new layout, extend `cards.js` and the stylesheet, then add it
 
 ## Checks
 
+GitHub Pages publishing is prepared in `.github/workflows/pages.yml`. Once Pages is enabled with GitHub Actions as its source, each push to `main` validates the project and publishes only `dist/`. All entrypoint, font, content, and image paths support a project subdirectory. Pages activation is currently blocked because the account's plan does not support this private repository.
+
 ```sh
 npm test
 npm run check

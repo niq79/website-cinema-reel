@@ -1,6 +1,6 @@
 @font-face {
   font-family:Playfair;
-  src:url('/assets/playfair-latin.woff2') format('woff2');
+  src:url('../assets/playfair-latin.woff2') format('woff2');
   font-weight:400 900;
   font-style:normal;
   font-display:swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family:DM Sans;
-  src:url('/assets/dm-sans-latin.woff2') format('woff2');
+  src:url('../assets/dm-sans-latin.woff2') format('woff2');
   font-weight:100 1000;
   font-style:normal;
   font-display:swap;

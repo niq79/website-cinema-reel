@@ -10,8 +10,14 @@ JSON.parse(await readFile(resolve(root, 'content/cards.schema.json'), 'utf8'));
 const html = await readFile(resolve(root, 'index.html'), 'utf8');
 const css = await readFile(resolve(root, 'styles/reel.css'), 'utf8');
 const files = new Set();
-for (const match of html.matchAll(/(?:src|href)="(\/[^"#]+)"/g)) files.add(resolve(root, '.' + match[1]));
-for (const match of css.matchAll(/url\(['"]?(\/[^)'"\s]+)['"]?\)/g)) files.add(resolve(root, '.' + match[1]));
+for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
+  if (!match[1].startsWith('./')) throw new Error(`Use project-relative entrypoint paths: ${match[1]}`);
+  files.add(resolve(root, match[1]));
+}
+for (const match of css.matchAll(/url\(['"]?([^)'"\s]+)['"]?\)/g)) {
+  if (!match[1].startsWith('../')) throw new Error(`Use stylesheet-relative asset paths: ${match[1]}`);
+  files.add(resolve(root, 'styles', match[1]));
+}
 for (const card of collection.cards) if (card.image.src.startsWith('/')) files.add(resolve(root, '.' + card.image.src));
 for (const name of await readdir(resolve(root, 'scripts'))) {
   if (!name.endsWith('.js')) continue;

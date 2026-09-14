@@ -17,7 +17,8 @@ function arrow() {
 
 function imageFor(card, className) {
   const img = element('img', className);
-  img.src = card.image.src;
+  // Content paths are relative to the site root, including on GitHub project Pages.
+  img.src = card.image.src.startsWith('/') ? new URL(`..${card.image.src}`, import.meta.url).href : card.image.src;
   img.alt = card.image.alt;
   img.style.objectPosition = card.image.position || 'center';
   img.draggable = false;
