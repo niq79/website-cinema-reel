@@ -1,6 +1,6 @@
 import { validateSettings } from './settings.js';
 import { element, frameFor, detailFor } from './cards.js';
-import { ReelMotion, wheelPixels, cardPose, imagePose, LOOP_PADDING, IMAGE_RATIO } from './navigation.js';
+import { ReelMotion, wheelPixels, cardPose, imagePose, imageHeightForParallax, LOOP_PADDING } from './navigation.js';
 
 export class CinemaReel {
   constructor({ cards, settings }) {
@@ -19,7 +19,6 @@ export class CinemaReel {
     this.motion.reducedMotion = this.reduceMotion.matches;
     this.track = document.querySelector('#track');
     this.viewport = document.querySelector('#viewport');
-    this.viewport.style.setProperty('--image-height', `${IMAGE_RATIO * 100}dvh`);
     this.dialog = document.querySelector('#details');
     this.previous = document.querySelector('#previous');
     this.next = document.querySelector('#next');
@@ -81,6 +80,7 @@ export class CinemaReel {
       '--radius': `${this.settings.cornerRadius}px`,
       '--vignette-depth': `${this.settings.vignetteDepth}dvh`,
       '--vignette-strength': this.settings.vignetteStrength,
+      '--image-height': `${imageHeightForParallax(this.settings.parallax) * 100}dvh`,
     };
     for (const [key, value] of Object.entries(variables)) document.documentElement.style.setProperty(key, value);
     this.measure();

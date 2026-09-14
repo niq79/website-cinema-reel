@@ -71,7 +71,7 @@ The `site` object controls the browser title, description, and accessible collec
 
 Open **http://127.0.0.1:5173/?debug=1** to show the floating Motion settings panel. It is absent on ordinary visits. The Image group opens first so you can compare **Off**, **Blur to sharp** (default), and **Frost**. Open the other groups for motion, text, and appearance controls. The panel remains open while you scroll elsewhere on the reel, and its own controls keep their native scrolling and keyboard behavior.
 
-Changes apply immediately and last until refresh. **Reset defaults** restores the supplied animation defaults. **Copy settings JSON** copies the complete object: replace `settings` in [dist/content/cards.json](dist/content/cards.json) to keep it. If clipboard access is unavailable, the panel reveals selectable JSON. The browser does not write to your content file.
+Changes apply immediately and last until refresh. Click a displayed number to type an exact JSON value, then press Enter or click away. Typed values can go beyond the slider's recommended range, within the wider safe range shown by the number field. The slider remains at its nearest endpoint until the value returns to its visual range. **Reset defaults** restores the supplied animation defaults. **Copy settings JSON** copies the complete object: replace `settings` in [dist/content/cards.json](dist/content/cards.json) to keep it. If clipboard access is unavailable, the panel reveals selectable JSON. The browser does not write to your content file.
 
 | Group | Controls and defaults |
 | --- | --- |
@@ -84,7 +84,9 @@ The schema provides valid ranges and defaults for all settings. `loop` remains a
 
 ## How scrolling works
 
-A two-finger trackpad gesture follows your input with increasing resistance toward **one adjacent card**. It cannot overshoot that destination. Crossing the commitment threshold selects that card; a smaller gesture returns to its origin. After a **20 ms gap** in wheel events, a decelerating landing begins. The 20 ms setting is a response delay, not the duration of the whole animation. A short remaining distance finishes sooner than the maximum landing duration.
+A wheel or two-finger trackpad gesture follows its first input event with increasing resistance toward **one adjacent card**. It cannot overshoot that destination. Crossing the commitment threshold selects that card; a smaller gesture returns to its origin. The commitment threshold therefore controls completion, not initial response. A short remaining distance finishes sooner than the maximum landing duration.
+
+Landing begins after the configured response gap, with a minimum 20 ms event grace. The reel measures the current wheel-event cadence and extends that grace when needed, so Magic Mouse packets arriving about once per display frame remain part of the same smooth gesture. This changes release detection without delaying movement on the first event.
 
 Momentum from that gesture cannot advance another card or restart the landing. A fresh gesture may interrupt immediately, even while the previous landing is unfinished. Gesture recognition uses a quiet gap, deliberate direction reversal, or renewed acceleration after momentum has decayed. Browser wheel events do not expose actual finger release, so this is a heuristic; the separate gesture-separation control is available for tuning on your trackpad.
 

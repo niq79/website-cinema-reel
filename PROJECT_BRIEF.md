@@ -23,13 +23,13 @@ The user's latest clarifications supersede the earlier unrestricted continuous-s
 - Use much stronger text blur in both directions, including outgoing text; default maximum 32 px and minimum 8 px while moving.
 - Touch and mouse dragging also approach one adjacent card and settle on release.
 
-Physical trackpad release must be inferred from wheel events. The current heuristic distinguishes fresh gestures through a quiet gap, reversal, or renewed acceleration after decay. The exact feel still needs hands-on tuning on the user's device.
+Physical trackpad and Magic Mouse release must be inferred from wheel events. The current heuristic distinguishes fresh gestures through a quiet gap, reversal, or renewed acceleration after decay. A minimum 20 ms grace adapts upward to the measured wheel-event cadence, preventing a 10 ms setting from cutting off Magic Mouse input between display frames. Initial movement still begins on the first event. The exact feel still needs hands-on tuning on the user's device.
 
 ## Debug mode and image treatments
 
 `?debug=1` opens a nonmodal floating Motion settings panel. It stays open while scrolling the reel elsewhere, adapts to narrow screens, and keeps its own controls' keyboard and scrolling behavior.
 
-Controls cover scroll sensitivity, commitment, response delay, landing duration, deceleration, gesture separation, text blur/clearing, image parallax/blur/intensity/clearing, frost opacity, vignette strength/depth, card spacing, and corner radius. Reset defaults and Copy settings JSON support transferring a tuned configuration into the content file. Changes are temporary until copied; there is no content editor or automatic file write.
+Controls cover scroll sensitivity, commitment, response delay, landing duration, deceleration, gesture separation, text blur/clearing, image parallax/blur/intensity/clearing, frost opacity, vignette strength/depth, card spacing, and corner radius. Each displayed number is editable and supports exact values beyond the slider's recommended visual range, within wider technical limits. Reset defaults and Copy settings JSON support transferring a tuned configuration into the content file. Changes are temporary until copied; there is no content editor or automatic file write.
 
 Image modes are Off, Blur to sharp (default), and Frost. Image effects are independent of text effects and clear at rest. They use opacity changes over a duplicate with a fixed blur filter, plus an overlay for frost. Image blur is capped at 12 px on narrow screens; offscreen effect layers are hidden. Liquid-glass distortion is deferred. Reduced-motion preferences disable these effects.
 

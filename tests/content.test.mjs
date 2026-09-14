@@ -56,14 +56,19 @@ test('debug exports roundtrip and all controls share validation and schema defau
   const schema = JSON.parse(await readFile(new URL('../dist/content/cards.schema.json', import.meta.url), 'utf8'));
   const settings = validateSettings({ imageEffect: 'frost', textBlur: 48, wheelPauseMs: 20 });
   assert.deepEqual(validateSettings(JSON.parse(JSON.stringify(settings))), settings);
+  assert.equal(validateSettings({ wheelPauseMs: 124.75 }).wheelPauseMs, 124.75);
+  assert.equal(validateSettings({ commitThreshold: 0 }).commitThreshold, 0);
   for (const field of SETTING_FIELDS) {
     const definition = schema.properties.settings.properties[field.key];
     assert.equal(definition.default, DEFAULT_SETTINGS[field.key]);
     if (field.options) assert.deepEqual(definition.enum, Object.keys(field.options));
     else {
-      assert.equal(definition.minimum, field.min);
-      assert.equal(definition.maximum, field.max);
-      assert.throws(() => validateSettings({ [field.key]: field.max + 1 }));
+      const inputMin = field.inputMin ?? field.min;
+      const inputMax = field.inputMax ?? field.max;
+      assert.equal(definition.minimum, inputMin);
+      assert.equal(definition.maximum, inputMax);
+      if (inputMax > field.max) assert.equal(validateSettings({ [field.key]: field.max + field.step })[field.key], field.max + field.step);
+      assert.throws(() => validateSettings({ [field.key]: inputMax + 1 }));
       assert.throws(() => validateSettings({ [field.key]: NaN }));
     }
   }

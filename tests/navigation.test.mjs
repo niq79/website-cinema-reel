@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ReelMotion, GestureTracker, wheelPixels, cardPose, imagePose, LOOP_PADDING, IMAGE_RATIO } from '../dist/scripts/navigation.js';
+import { ReelMotion, GestureTracker, wheelPixels, cardPose, imagePose, imageHeightForParallax, LOOP_PADDING, MIN_WHEEL_RELEASE_MS } from '../dist/scripts/navigation.js';
 import { DEFAULT_SETTINGS } from '../dist/scripts/settings.js';
 
 const close = (actual, expected, epsilon = 1e-9) => assert.ok(Math.abs(actual - expected) < epsilon, `${actual} != ${expected}`);
@@ -43,6 +43,21 @@ test('landing starts at the 20 ms response gap and eases monotonically to its de
     }
     assert.equal(motion.position, 2 + direction);
   }
+});
+
+test('a 10 ms setting still follows Magic Mouse packets arriving once per frame', () => {
+  const motion = create({ loop: false, wheelPauseMs: 10 });
+  motion.wheelBy(24, 800, 0);
+  const first = motion.position;
+  motion.update(16);
+  assert.equal(motion.position, first);
+  assert.equal(motion.wheelBy(24, 800, 16), true);
+  assert.ok(motion.position > first);
+  assert.ok(motion.wheelUntil >= 16 + MIN_WHEEL_RELEASE_MS);
+  motion.update(35);
+  assert.equal(motion.tween, null);
+  motion.update(42);
+  assert.notEqual(motion.tween, null);
 });
 
 test('old momentum after the response gap cannot retarget or delay the landing', () => {
@@ -239,8 +254,8 @@ test('image treatments are independent, symmetric, clear at rest, and respect re
 test('image overscan covers the visible crop throughout the full parallax range', () => {
   const viewport = 1000;
   const frame = 800;
-  const image = viewport * IMAGE_RATIO;
-  for (const parallax of [0, 0.25, 0.83, 1]) {
+  for (const parallax of [-1, -0.25, 0, 0.25, 0.83, 1, 1.5, 2]) {
+    const image = viewport * imageHeightForParallax(parallax);
     for (let dy = -900; dy <= 900; dy += 10) {
       const top = Math.max(-viewport / 2, dy - frame / 2);
       const bottom = Math.min(viewport / 2, dy + frame / 2);

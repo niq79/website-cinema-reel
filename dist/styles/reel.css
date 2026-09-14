@@ -879,12 +879,22 @@ a {
   gap:0 12px;
 }
 
-.motion-field output {
-  font-variant-numeric:tabular-nums;
+.motion-number {
+  grid-column:2;
+  grid-row:1;
+  width:6.5rem;
+  min-height:34px;
+  padding:5px 7px;
   color:#c5d3aa;
+  background:#292b26;
+  border:1px solid #ffffff25;
+  border-radius:6px;
+  font:inherit;
+  font-variant-numeric:tabular-nums;
+  text-align:right;
 }
 
-.motion-field input,.motion-field select {
+.motion-field input[type="range"],.motion-field select {
   grid-column:1/-1;
   width:100%;
   min-height:40px;
@@ -927,7 +937,7 @@ a {
 @media(max-width:700px) {
   .image-soft { filter:blur(min(var(--image-blur,12px),12px)); }
   .motion-panel { max-height:62dvh; }
-  .motion-field select { font-size:16px; }
+  .motion-field select,.motion-number { font-size:16px; }
 }
 
 @media(prefers-reduced-motion:reduce) {

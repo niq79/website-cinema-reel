@@ -33,8 +33,7 @@ export function createMotionPanel(reel) {
     label.htmlFor = `motion-${field.key}`;
     const input = element(field.options ? 'select' : 'input');
     input.id = label.htmlFor;
-    const output = element('output');
-    output.htmlFor = input.id;
+    let exactInput;
     if (field.options) {
       for (const [value, name] of Object.entries(field.options)) {
         const option = element('option', '', name);
@@ -46,18 +45,36 @@ export function createMotionPanel(reel) {
       input.min = field.min;
       input.max = field.max;
       input.step = field.step;
+      const inputMin = field.inputMin ?? field.min;
+      const inputMax = field.inputMax ?? field.max;
+      exactInput = element('input', 'motion-number');
+      exactInput.type = 'number';
+      exactInput.min = inputMin;
+      exactInput.max = inputMax;
+      exactInput.step = 'any';
+      exactInput.inputMode = 'decimal';
+      exactInput.setAttribute('aria-label', `${field.label}, exact value`);
+      exactInput.title = `Exact value (${inputMin} to ${inputMax})`;
+      exactInput.addEventListener('focus', () => exactInput.select());
+      exactInput.addEventListener('change', () => applyNumericValue(field, exactInput));
+      exactInput.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          applyNumericValue(field, exactInput);
+        }
+      });
     }
     input.addEventListener('input', () => {
       reel.applySettings({ [field.key]: field.options ? input.value : Number(input.value) });
       sync();
     });
     row.append(label);
-    if (!field.options) row.append(output);
+    if (exactInput) row.append(exactInput);
     row.append(input);
     groups.get(field.group).append(row);
-    fields.set(field.key, { input, output, field });
+    fields.set(field.key, { input, exactInput, field });
   }
-  groups.get('Motion').append(element('p', 'motion-hint', 'Landing response is the pause before settling, not the animation duration. Gesture separation helps distinguish a new swipe from momentum.'));
+  groups.get('Motion').append(element('p', 'motion-hint', 'The reel moves on the first wheel event. Landing response is a minimum release pause; event cadence extends it automatically for devices such as Magic Mouse.'));
   groups.get('Image').append(element('p', 'motion-hint', 'Effects clear at rest. Image blur is capped at 12px on narrow screens. Reduced motion disables the effects.'));
   const actions = element('div', 'motion-actions');
   const reset = element('button', '', 'Reset defaults');
@@ -74,14 +91,32 @@ export function createMotionPanel(reel) {
   root.append(panel, toggle);
   document.body.append(root);
 
+  function applyNumericValue(field, exactInput) {
+    const value = Number(exactInput.value);
+    const inputMin = field.inputMin ?? field.min;
+    const inputMax = field.inputMax ?? field.max;
+    if (exactInput.value === '' || !Number.isFinite(value) || value < inputMin || value > inputMax) {
+      exactInput.setCustomValidity(`Enter a value from ${inputMin} to ${inputMax}.`);
+      exactInput.reportValidity();
+      return;
+    }
+    exactInput.setCustomValidity('');
+    reel.applySettings({ [field.key]: value });
+    sync();
+  }
+
   function sync() {
-    for (const { input, output, field } of fields.values()) {
+    for (const { input, exactInput, field } of fields.values()) {
       const value = reel.settings[field.key];
       input.value = value;
-      output.value = field.percent ? `${Math.round(value * 100)}%` : `${value}${field.unit || ''}`;
+      if (exactInput) {
+        exactInput.value = value;
+        exactInput.setCustomValidity('');
+      }
       const imageControl = ['imageBlur', 'imageIntensity', 'imageClearMs', 'frostOpacity'].includes(field.key);
       const disabled = imageControl && (reel.settings.imageEffect === 'off' || (field.key === 'frostOpacity' && reel.settings.imageEffect !== 'frost'));
       input.disabled = disabled;
+      if (exactInput) exactInput.disabled = disabled;
     }
     exported.value = JSON.stringify(reel.settings, null, 2);
   }

@@ -6,9 +6,16 @@ export function wheelPixels(event, viewportHeight) {
 }
 export const LOOP_PADDING = 2;
 export const IMAGE_RATIO = 1.2;
+export const MIN_WHEEL_RELEASE_MS = 20;
 export const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 export const mod = (index, total) => ((index % total) + total) % total;
 const smoothstep = t => t * t * (3 - 2 * t);
+
+export function imageHeightForParallax(parallax) {
+  const centerRange = Math.abs(0.9 * parallax - 0.4);
+  const nearCenterRange = 0.4 + 0.1 * Math.abs(parallax);
+  return Math.max(IMAGE_RATIO, 2 * Math.max(centerRange, nearCenterRange));
+}
 
 /** Detect a fresh push separately from the 20 ms landing response. */
 export class GestureTracker {
@@ -21,11 +28,13 @@ export class GestureTracker {
     this.peak = 0;
     this.reversal = 0;
     this.decayed = false;
+    this.cadenceMs = 0;
   }
   push(delta, now, quietMs) {
     const magnitude = Math.abs(delta);
     const direction = Math.sign(delta);
-    const quiet = now - this.lastTime >= quietMs;
+    const interval = now - this.lastTime;
+    const quiet = interval >= quietMs;
     if (direction !== this.direction) this.reversal += magnitude;
     else this.reversal = 0;
     const reverse = direction !== this.direction && this.reversal >= 10;
@@ -37,7 +46,11 @@ export class GestureTracker {
       this.peak = magnitude;
       this.decayed = false;
       this.reversal = 0;
+      this.cadenceMs = 0;
     } else {
+      if (Number.isFinite(interval) && interval > 0) {
+        this.cadenceMs = this.cadenceMs ? this.cadenceMs * 0.65 + interval * 0.35 : interval;
+      }
       this.peak = Math.max(this.peak, magnitude);
       if (magnitude < this.peak * 0.45) this.decayed = true;
     }
@@ -87,11 +100,15 @@ export class ReelMotion {
   get index() { return mod(this.target, this.total); }
   get moving() { return this.tween !== null || this.wheelUntil !== null || this.drag !== null; }
   limit(value) { return (this.loop ? value : clamp(value, 0, this.total - 1)) + 0; }
+  releaseDelay() {
+    const cadenceGrace = this.tracker.cadenceMs ? this.tracker.cadenceMs * 1.6 : 0;
+    return Math.max(this.settings.wheelPauseMs, MIN_WHEEL_RELEASE_MS, cadenceGrace);
+  }
   configure(settings, now) {
     this.update(now);
     this.settings = { ...this.settings, ...settings };
     if (this.tween) this.startSettle(now);
-    if (this.wheelUntil !== null) this.wheelUntil = this.tracker.lastTime + this.settings.wheelPauseMs;
+    if (this.wheelUntil !== null) this.wheelUntil = this.tracker.lastTime + this.releaseDelay();
   }
   rebase() {
     if (!this.loop) return;
@@ -154,7 +171,7 @@ export class ReelMotion {
     }
     if (this.gesture.released) return false;
     this.follow(this.gesture, clamp(delta, -200, 200), pitch);
-    this.wheelUntil = now + this.settings.wheelPauseMs;
+    this.wheelUntil = now + this.releaseDelay();
     return true;
   }
   navigate(index, now, direction = 0) {
