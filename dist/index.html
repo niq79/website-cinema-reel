@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0908" />
+    <meta name="description" content="An independent film collection, presented as a cinematic reel." />
+    <title>Cinema Reel — Selected films</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles/reel.css" />
+    <script type="module" src="/scripts/app.js"></script>
+  </head>
+  <body>
+    <main class="cinema" id="cinema" aria-label="Film collection">
+      <h1 class="sr-only" id="page-title">Cinema Reel</h1>
+      <div class="viewport" id="viewport" role="region" aria-roledescription="carousel" aria-label="Selected films" tabindex="0">
+        <div class="track" id="track"></div>
+      </div>
+      <nav class="reel-nav" aria-label="Choose a film">
+        <button class="nav-arrow" id="previous" aria-label="Previous film" title="Previous film (↑)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg></button>
+        <span class="current-number" id="current-number">01</span>
+        <div class="pips" id="pips"></div>
+        <span class="total-number" id="total-number">03</span>
+        <button class="nav-arrow" id="next" aria-label="Next film" title="Next film (↓)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 10 6 6 6-6"/></svg></button>
+      </nav>
+      <p class="sr-only" id="navigation-help">Scroll, swipe, or use the up and down arrow keys to explore the cards.</p>
+      <p class="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+      <p class="load-error" id="load-error" hidden></p>
+    </main>
+    <dialog class="details" id="details" aria-labelledby="detail-title">
+      <button class="detail-close" id="detail-close" aria-label="Close details"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      <div id="detail-content"></div>
+    </dialog>
+    <noscript><p class="load-error">Enable JavaScript to explore the film collection.</p></noscript>
+  </body>
+</html>

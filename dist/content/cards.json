@@ -1,0 +1,223 @@
+{
+  "$schema": "./cards.schema.json",
+  "site": {
+    "title": "Cinema Reel",
+    "collection": "Selected films / Vol. 01",
+    "description": "An independent film collection, presented as a cinematic reel."
+  },
+  "settings": {
+    "loop": true,
+    "scrollSensitivity": 1.5,
+    "commitThreshold": 0.05,
+    "wheelPauseMs": 10,
+    "transitionMs": 800,
+    "easePower": 3,
+    "gestureGapMs": 120,
+    "textBlur": 37,
+    "textMotionBlur": 10,
+    "textSharpnessMs": 400,
+    "parallax": 0.34,
+    "imageEffect": "frost",
+    "imageBlur": 14,
+    "imageIntensity": 0.8,
+    "imageClearMs": 400,
+    "frostOpacity": 0.19,
+    "vignetteStrength": 1,
+    "vignetteDepth": 10,
+    "cardGap": 5,
+    "cornerRadius": 28
+  },
+  "cards": [
+    {
+      "id": "blueprint-no-seven",
+      "layout": "cinematic",
+      "title": [
+        "Blueprint",
+        "No. 7"
+      ],
+      "eyebrow": "True/False · True Life Fund",
+      "category": "Hybrid documentary",
+      "year": "2024",
+      "credit": {
+        "label": "Director",
+        "value": "Sam Binns"
+      },
+      "image": {
+        "src": "/assets/blueprint.jpg",
+        "alt": "A person standing beneath green fluorescent lights in a concrete passage",
+        "position": "center 50%"
+      },
+      "highlights": [
+        {
+          "label": "True Life Fund",
+          "quote": "A portrait of now",
+          "stars": 5
+        },
+        {
+          "label": "Best First Feature",
+          "quote": "Raw & unnerving",
+          "stars": 4
+        },
+        {
+          "label": "Critics Prize",
+          "quote": "Essential viewing",
+          "stars": 5
+        }
+      ],
+      "details": {
+        "label": "Explore film",
+        "paragraphs": [
+          "An architect of the everyday traces seven anonymous lives across a single city block. Captured in long, unblinking takes, the film constructs an atlas of urban intimacy — strangers passing as a single organism, separated only by the gravity of their private orbits."
+        ],
+        "facts": [
+          {
+            "label": "Runtime",
+            "value": "1h 38m"
+          },
+          {
+            "label": "Format",
+            "value": "16mm"
+          },
+          {
+            "label": "Year",
+            "value": "2024"
+          },
+          {
+            "label": "Country",
+            "value": "UK · Germany"
+          },
+          {
+            "label": "Language",
+            "value": "English"
+          },
+          {
+            "label": "Aspect",
+            "value": "1.66:1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "atlas-unfolds",
+      "layout": "cinematic",
+      "title": [
+        "Atlas",
+        "Unfolds"
+      ],
+      "eyebrow": "Berlinale · Encounters",
+      "category": "Essay film",
+      "year": "2023",
+      "credit": {
+        "label": "Director",
+        "value": "Elias Norén"
+      },
+      "image": {
+        "src": "/assets/atlas.jpg",
+        "alt": "Two people inside a small, softly lit Japanese restaurant",
+        "position": "center 45%"
+      },
+      "highlights": [
+        {
+          "label": "Best Cinematography",
+          "quote": "An opulent canvas",
+          "stars": 5
+        },
+        {
+          "label": "Encounters Prize",
+          "quote": "Stunning in restraint",
+          "stars": 4
+        },
+        {
+          "label": "FIPRESCI Prize",
+          "quote": "A quiet masterwork",
+          "stars": 5
+        }
+      ],
+      "details": {
+        "label": "Explore film",
+        "paragraphs": [
+          "A four-year journey across the high passes of Central Asia, charted entirely on foot. Norén trades narration for breath and footstep — the sky is the protagonist, the path is the verse, and what unfolds is less a documentary than an epic poem to scale."
+        ],
+        "facts": [
+          {
+            "label": "Runtime",
+            "value": "2h 12m"
+          },
+          {
+            "label": "Format",
+            "value": "65mm"
+          },
+          {
+            "label": "Year",
+            "value": "2023"
+          },
+          {
+            "label": "Country",
+            "value": "Sweden · Kazakhstan"
+          },
+          {
+            "label": "Language",
+            "value": "Silent"
+          },
+          {
+            "label": "Aspect",
+            "value": "2.20:1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "the-long-quiet",
+      "layout": "editorial",
+      "title": [
+        "The long",
+        "quiet"
+      ],
+      "eyebrow": "TIFF Docs · Platform",
+      "category": "Observational",
+      "year": "2024",
+      "credit": {
+        "label": "Director",
+        "value": "Amara Okafor"
+      },
+      "image": {
+        "src": "/assets/quiet.jpg",
+        "alt": "A cyclist disappearing into a misty forest path",
+        "position": "center"
+      },
+      "summary": "The way light moves across a room. The things we hear when we stop to listen.",
+      "details": {
+        "label": "Explore film",
+        "paragraphs": [
+          "On the eve of a six-month return to silence, four Carmelite nuns open their shutters and their letters. Okafor’s patient gaze finds devotion in the smallest gestures — the way light moves across a refectory, the way silence holds a room together long after the bell has rung."
+        ],
+        "facts": [
+          {
+            "label": "Runtime",
+            "value": "1h 47m"
+          },
+          {
+            "label": "Format",
+            "value": "Digital 4K"
+          },
+          {
+            "label": "Year",
+            "value": "2024"
+          },
+          {
+            "label": "Country",
+            "value": "Nigeria · Spain"
+          },
+          {
+            "label": "Language",
+            "value": "English · Spanish"
+          },
+          {
+            "label": "Aspect",
+            "value": "1.85:1"
+          }
+        ]
+      }
+    }
+  ]
+}
