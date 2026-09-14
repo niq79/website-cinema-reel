@@ -21,6 +21,28 @@ export const SETTING_FIELDS = [
   { key: 'cornerRadius', group: 'Appearance', label: 'Corner radius', min: 0, max: 48, inputMin: 0, inputMax: 200, step: 1, value: 28, unit: ' px' },
 ];
 
+export const SETTING_DESCRIPTIONS = Object.freeze({
+  scrollSensitivity: 'Multiplies wheel and drag distance before resistance is applied. Higher values make a smaller gesture move the card farther; this does not change the duration of the final landing.',
+  commitThreshold: 'Sets how much accumulated input selects the adjacent card, measured as a fraction of one card pitch. A gesture below this value still moves immediately, but returns to its starting card when released.',
+  wheelPauseMs: 'Sets the minimum quiet time after wheel events before the landing begins. The reel may extend it to match the device event cadence, preventing Magic Mouse input from being split between display frames.',
+  transitionMs: 'Sets the maximum duration of the eased landing after release. Short remaining distances finish sooner, and a fresh gesture can interrupt the landing immediately.',
+  easePower: 'Shapes the deceleration into the destination. Higher values cover more distance early and spend longer slowing near the endpoint; lower values distribute movement more evenly.',
+  gestureGapMs: 'Sets the quiet interval that guarantees the next wheel input starts a new one-card gesture. Lower values permit faster repeated advances but can make momentum easier to mistake for a fresh gesture.',
+  textBlur: 'Sets the strongest blur applied to text as its card moves away from the center. It affects incoming and outgoing cards in both scroll directions.',
+  textMotionBlur: 'Sets the minimum text blur while the reel is moving, including text near the center. It is capped by Maximum text blur and clears after movement ends.',
+  textSharpnessMs: 'Controls how long the remaining motion blur takes to clear after the card finishes landing. Higher values leave a softer trailing resolve.',
+  parallax: 'Controls how independently the image moves from its card. Zero attaches it to the frame, one holds it near the viewport, and typed values outside the slider can reverse or amplify the effect.',
+  imageEffect: 'Chooses the image treatment used during movement. Blur to sharp fades a blurred image copy; Frost adds the translucent frost layer; Off leaves the image untreated.',
+  imageBlur: 'Sets the blur radius of the composited image copy. Higher values soften the moving image more strongly; narrow screens cap the rendered radius at 12 px for performance.',
+  imageIntensity: 'Multiplies the selected image treatment during movement. Values above one make the effect reach full visual strength earlier in the transition.',
+  imageClearMs: 'Controls how long the image treatment takes to disappear after the card finishes landing. It does not change the card landing duration.',
+  frostOpacity: 'Sets the maximum opacity of the pale textured frost layer. Its visible result is also multiplied by Image intensity and the card’s transition phase.',
+  vignetteStrength: 'Sets the opacity of the soft top and bottom viewport fades. Zero removes them; one uses their full authored darkness.',
+  vignetteDepth: 'Sets how far the top and bottom fades extend into the viewport. Larger values make cards disappear more gradually at the browser edges.',
+  cardGap: 'Sets the vertical space between neighboring card frames in viewport-height units. Changing it also changes the physical scroll distance between cards.',
+  cornerRadius: 'Sets the rounding of card and detail-panel corners. Zero produces square corners; larger values create a softer frame shape.',
+});
+
 export const DEFAULT_SETTINGS = Object.freeze({ loop: true, ...Object.fromEntries(SETTING_FIELDS.map(field => [field.key, field.value])) });
 
 export function validateSettings(input = {}) {

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { DEFAULT_SETTINGS, SETTING_FIELDS, validateSettings } from '../dist/scripts/settings.js';
+import { DEFAULT_SETTINGS, SETTING_DESCRIPTIONS, SETTING_FIELDS, validateSettings } from '../dist/scripts/settings.js';
 import { validateCollection } from '../dist/scripts/content.js';
 
 const source = JSON.parse(await readFile(new URL('../dist/content/cards.json', import.meta.url), 'utf8'));
@@ -75,4 +75,11 @@ test('debug exports roundtrip and all controls share validation and schema defau
   assert.throws(() => validateSettings({ imageEffect: 'liquid' }), /settings.imageEffect/);
   assert.throws(() => validateSettings({ textBurr: 20 }), /unknown setting/);
   assert.throws(() => validateSettings({ constructor: 'bad' }), /unknown setting/);
+});
+
+test('every motion control has a detailed tooltip explanation', () => {
+  assert.deepEqual(Object.keys(SETTING_DESCRIPTIONS).sort(), SETTING_FIELDS.map(field => field.key).sort());
+  for (const field of SETTING_FIELDS) {
+    assert.ok(SETTING_DESCRIPTIONS[field.key].length >= 80, `${field.key} tooltip is too brief`);
+  }
 });

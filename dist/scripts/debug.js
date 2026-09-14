@@ -1,5 +1,5 @@
 import { element } from './cards.js';
-import { DEFAULT_SETTINGS, SETTING_FIELDS } from './settings.js';
+import { DEFAULT_SETTINGS, SETTING_DESCRIPTIONS, SETTING_FIELDS } from './settings.js';
 
 export function createMotionPanel(reel) {
   const root = element('div', 'motion-tools');
@@ -10,6 +10,10 @@ export function createMotionPanel(reel) {
   const panel = element('aside', 'motion-panel');
   panel.id = 'motion-panel';
   panel.setAttribute('aria-labelledby', 'motion-title');
+  const tooltip = element('div', 'motion-tooltip');
+  tooltip.hidden = true;
+  tooltip.setAttribute('aria-hidden', 'true');
+  let pinnedHelp = null;
   const header = element('div', 'motion-header');
   const heading = element('h2', '', 'Motion settings');
   heading.id = 'motion-title';
@@ -29,8 +33,40 @@ export function createMotionPanel(reel) {
       panel.append(group);
     }
     const row = element('div', 'motion-field');
+    const labelRow = element('div', 'motion-label');
     const label = element('label', '', field.label);
     label.htmlFor = `motion-${field.key}`;
+    const helpText = SETTING_DESCRIPTIONS[field.key];
+    const helpDescription = element('span', 'sr-only', helpText);
+    helpDescription.id = `motion-help-${field.key}`;
+    const help = element('button', 'motion-help', '?');
+    help.type = 'button';
+    help.setAttribute('aria-label', `About ${field.label}`);
+    help.setAttribute('aria-describedby', helpDescription.id);
+    help.setAttribute('aria-expanded', 'false');
+    help.addEventListener('pointerenter', () => {
+      if (!pinnedHelp || pinnedHelp === help) showTooltip(help, helpText);
+    });
+    help.addEventListener('pointerleave', () => {
+      if (pinnedHelp !== help && document.activeElement !== help) hideTooltip();
+    });
+    help.addEventListener('focus', () => {
+      if (pinnedHelp && pinnedHelp !== help) closeTooltip();
+      showTooltip(help, helpText);
+    });
+    help.addEventListener('blur', () => {
+      if (pinnedHelp !== help) hideTooltip();
+    });
+    help.addEventListener('click', () => {
+      if (pinnedHelp === help) closeTooltip();
+      else {
+        closeTooltip();
+        pinnedHelp = help;
+        help.setAttribute('aria-expanded', 'true');
+        showTooltip(help, helpText);
+      }
+    });
+    labelRow.append(label, help, helpDescription);
     const input = element(field.options ? 'select' : 'input');
     input.id = label.htmlFor;
     let exactInput;
@@ -68,7 +104,7 @@ export function createMotionPanel(reel) {
       reel.applySettings({ [field.key]: field.options ? input.value : Number(input.value) });
       sync();
     });
-    row.append(label);
+    row.append(labelRow);
     if (exactInput) row.append(exactInput);
     row.append(input);
     groups.get(field.group).append(row);
@@ -88,8 +124,32 @@ export function createMotionPanel(reel) {
   exported.hidden = true;
   exported.setAttribute('aria-label', 'Settings JSON to copy');
   panel.append(actions, status, exported);
-  root.append(panel, toggle);
+  root.append(panel, toggle, tooltip);
   document.body.append(root);
+
+  function showTooltip(anchor, text) {
+    tooltip.textContent = text;
+    tooltip.hidden = false;
+    const rect = anchor.getBoundingClientRect();
+    const margin = 12;
+    const width = tooltip.offsetWidth;
+    const height = tooltip.offsetHeight;
+    const left = Math.max(margin, Math.min(window.innerWidth - width - margin, rect.left - width + rect.width));
+    let top = rect.bottom + 8;
+    if (top + height > window.innerHeight - margin) top = rect.top - height - 8;
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${Math.max(margin, top)}px`;
+  }
+
+  function hideTooltip() {
+    if (!pinnedHelp) tooltip.hidden = true;
+  }
+
+  function closeTooltip() {
+    if (pinnedHelp) pinnedHelp.setAttribute('aria-expanded', 'false');
+    pinnedHelp = null;
+    tooltip.hidden = true;
+  }
 
   function applyNumericValue(field, exactInput) {
     const value = Number(exactInput.value);
@@ -121,6 +181,7 @@ export function createMotionPanel(reel) {
     exported.value = JSON.stringify(reel.settings, null, 2);
   }
   function setOpen(open) {
+    if (!open) closeTooltip();
     panel.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
     if (!open && panel.contains(document.activeElement)) toggle.focus();
@@ -128,8 +189,16 @@ export function createMotionPanel(reel) {
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   close.addEventListener('click', () => setOpen(false));
   root.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); setOpen(false); }
+    if (event.key !== 'Escape' || panel.hidden) return;
+    event.preventDefault();
+    if (!tooltip.hidden) closeTooltip();
+    else setOpen(false);
   });
+  document.addEventListener('pointerdown', event => {
+    if (pinnedHelp && !event.target.closest('.motion-help')) closeTooltip();
+  });
+  panel.addEventListener('scroll', closeTooltip, { passive: true });
+  window.addEventListener('resize', closeTooltip);
   reset.addEventListener('click', () => {
     reel.applySettings({ ...DEFAULT_SETTINGS, loop: reel.settings.loop });
     sync();
