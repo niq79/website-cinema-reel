@@ -13,6 +13,8 @@ Status: local demo implemented, including the live motion panel and image treatm
 
 ## Current motion agreement
 
+Latest revision: a recognized wheel or trackpad gesture immediately launches a complete eased transition to one adjacent card. It no longer follows wheel movement through resistance and then pauses before aligning. The saved commitment threshold is `0.12`; the response gap only expires uncommitted input. Fresh gestures can retarget an unfinished animation. Touch and mouse dragging still follow the hand and settle on release. This supersedes the earlier wheel-tracking details below.
+
 The user's latest clarifications supersede the earlier unrestricted continuous-scroll prototype:
 
 - The input device is a two-finger trackpad.

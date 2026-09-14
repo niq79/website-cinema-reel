@@ -110,7 +110,7 @@ export function createMotionPanel(reel) {
     groups.get(field.group).append(row);
     fields.set(field.key, { input, exactInput, field });
   }
-  groups.get('Motion').append(element('p', 'motion-hint', 'The reel moves on the first wheel event. Landing response is a minimum release pause; event cadence extends it automatically for devices such as Magic Mouse.'));
+  groups.get('Motion').append(element('p', 'motion-hint', 'A recognized swipe animates all the way to the next card. Lower Commit threshold for lighter swipes. Landing response only affects input collected before commitment.'));
   groups.get('Image').append(element('p', 'motion-hint', 'Effects clear at rest. Image blur is capped at 12px on narrow screens. Reduced motion disables the effects.'));
   const actions = element('div', 'motion-actions');
   const reset = element('button', '', 'Reset defaults');

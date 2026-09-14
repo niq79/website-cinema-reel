@@ -22,10 +22,10 @@ export const SETTING_FIELDS = [
 ];
 
 export const SETTING_DESCRIPTIONS = Object.freeze({
-  scrollSensitivity: 'Multiplies wheel and drag distance before resistance is applied. Higher values make a smaller gesture move the card farther; this does not change the duration of the final landing.',
-  commitThreshold: 'Sets how much accumulated input selects the adjacent card, measured as a fraction of one card pitch. A gesture below this value still moves immediately, but returns to its starting card when released.',
-  wheelPauseMs: 'Sets the minimum quiet time after wheel events before the landing begins. The reel may extend it to match the device event cadence, preventing Magic Mouse input from being split between display frames.',
-  transitionMs: 'Sets the maximum duration of the eased landing after release. Short remaining distances finish sooner, and a fresh gesture can interrupt the landing immediately.',
+  scrollSensitivity: 'Multiplies wheel input before checking the commitment threshold. Higher values let a smaller swipe start the full transition. For touch dragging it also changes how far the card follows your hand.',
+  commitThreshold: 'Sets the input needed to launch a complete wheel transition, as a fraction of card spacing including the gap. Lower values respond to lighter swipes; zero triggers on the first event. Touch drags still settle on release.',
+  wheelPauseMs: 'Sets how long a small, uncommitted wheel gesture can wait for more input. Device timing may extend this interval. Once the threshold is crossed, the full animation begins immediately and ignores this delay.',
+  transitionMs: 'Sets the maximum duration of the complete animation once a wheel gesture commits. The card slows smoothly into position with no release pause. A fresh gesture can interrupt it; touch dragging still finishes on release.',
   easePower: 'Shapes the deceleration into the destination. Higher values cover more distance early and spend longer slowing near the endpoint; lower values distribute movement more evenly.',
   gestureGapMs: 'Sets the quiet interval that guarantees the next wheel input starts a new one-card gesture. Lower values permit faster repeated advances but can make momentum easier to mistake for a fresh gesture.',
   textBlur: 'Sets the strongest blur applied to text as its card moves away from the center. It affects incoming and outgoing cards in both scroll directions.',

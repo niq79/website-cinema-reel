@@ -82,8 +82,8 @@ export function imagePose(dy, height, activity, settings, reducedMotion = false)
 }
 
 /**
- * One adjacent destination per gesture. Tracking approaches it with resistance;
- * after the response gap, a monotonic ease-out owns the landing. Old momentum
+ * One adjacent destination per wheel gesture. Commitment starts a full eased
+ * transition immediately, without waiting for release. Old momentum
  * cannot move the destination. A fresh gesture may interrupt at any time.
  */
 export class ReelMotion {
@@ -139,7 +139,10 @@ export class ReelMotion {
   }
   update(now) {
     if (this.drag) return;
-    if (this.wheelUntil !== null && now >= this.wheelUntil) this.startSettle(this.wheelUntil);
+    if (this.wheelUntil !== null && now >= this.wheelUntil) {
+      this.wheelUntil = null;
+      if (this.gesture) this.gesture.released = true;
+    }
     if (!this.tween) return;
     const { from, to, start, duration } = this.tween;
     const t = clamp((now - start) / duration, 0, 1);
@@ -166,12 +169,18 @@ export class ReelMotion {
     this.update(now);
     const fresh = this.tracker.push(delta, now, this.settings.gestureGapMs);
     if (fresh || !this.gesture) {
-      this.tween = null;
       this.gesture = this.makeGesture(Math.sign(delta));
     }
     if (this.gesture.released) return false;
-    this.follow(this.gesture, clamp(delta, -200, 200), pitch);
-    this.wheelUntil = now + this.releaseDelay();
+    const gesture = this.gesture;
+    gesture.distance = Math.max(0, gesture.distance + clamp(delta, -200, 200) * gesture.direction * this.settings.scrollSensitivity / pitch);
+    if (gesture.distance >= this.settings.commitThreshold) {
+      gesture.committed = true;
+      this.target = gesture.destination;
+      this.startSettle(now);
+    } else {
+      this.wheelUntil = now + this.releaseDelay();
+    }
     return true;
   }
   navigate(index, now, direction = 0) {

@@ -84,9 +84,9 @@ The schema provides valid ranges and defaults for all settings. `loop` remains a
 
 ## How scrolling works
 
-A wheel or two-finger trackpad gesture follows its first input event with increasing resistance toward **one adjacent card**. It cannot overshoot that destination. Crossing the commitment threshold selects that card; a smaller gesture returns to its origin. The commitment threshold therefore controls completion, not initial response. A short remaining distance finishes sooner than the maximum landing duration.
+A wheel or two-finger trackpad gesture launches a complete animation to **one adjacent card** as soon as accumulated input crosses the commitment threshold. The card decelerates continuously to its destination without overshoot or a separate alignment phase. Before commitment, small inputs accumulate without displacing the card. The saved threshold is `0.12`; lower values trigger on lighter swipes, and `0` triggers on the first nonzero event.
 
-Landing begins after the configured response gap, with a minimum 20 ms event grace. The reel measures the current wheel-event cadence and extends that grace when needed, so Magic Mouse packets arriving about once per display frame remain part of the same smooth gesture. This changes release detection without delaying movement on the first event.
+Landing response now only controls how long uncommitted input waits for another event, with at least 20 ms of grace adapted to wheel-event cadence. It never delays a committed transition. Landing duration and Deceleration strength control the complete animation. Wheel resistance is no longer part of this animation; touch and mouse dragging retain direct tracking with resistance and settle on release.
 
 Momentum from that gesture cannot advance another card or restart the landing. A fresh gesture may interrupt immediately, even while the previous landing is unfinished. Gesture recognition uses a quiet gap, deliberate direction reversal, or renewed acceleration after momentum has decayed. Browser wheel events do not expose actual finger release, so this is a heuristic; the separate gesture-separation control is available for tuning on your trackpad.
 

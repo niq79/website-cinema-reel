@@ -1,18 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ReelMotion, GestureTracker, wheelPixels, cardPose, imagePose, imageHeightForParallax, LOOP_PADDING, MIN_WHEEL_RELEASE_MS } from '../dist/scripts/navigation.js';
+import { ReelMotion, GestureTracker, wheelPixels, cardPose, imagePose, imageHeightForParallax, LOOP_PADDING } from '../dist/scripts/navigation.js';
 import { DEFAULT_SETTINGS } from '../dist/scripts/settings.js';
 
 const close = (actual, expected, epsilon = 1e-9) => assert.ok(Math.abs(actual - expected) < epsilon, `${actual} != ${expected}`);
 const create = options => new ReelMotion({ total: 6, ...options });
 
-test('small continuous packets follow immediately; a long gesture is bounded to one adjacent card', () => {
+test('a long wheel gesture animates to exactly one adjacent card', () => {
   const motion = create({ loop: false });
   let previous = 0;
   for (let i = 0; i < 300; i++) {
     motion.wheelBy(i < 10 ? 4 : 150, 800, i * 8);
-    assert.ok(motion.position >= previous && motion.position < 1);
-    assert.equal(motion.tween, null);
+    assert.ok(motion.position >= previous && motion.position <= 1);
     previous = motion.position;
   }
   assert.equal(motion.index, 1);
@@ -21,22 +20,21 @@ test('small continuous packets follow immediately; a long gesture is bounded to 
   assert.equal(motion.moving, false);
 });
 
-test('landing starts at the 20 ms response gap and eases monotonically to its destination', () => {
+test('commitment starts immediately and decelerates all the way without a release pause', () => {
   for (const direction of [-1, 1]) {
-    const motion = create({ loop: false });
+    const motion = create({ loop: false, wheelPauseMs: 2000 });
     motion.position = motion.target = 2;
     motion.wheelBy(direction * 180, 800, 0);
     const held = motion.position;
-    motion.update(19);
-    assert.equal(motion.position, held);
-    motion.update(20);
-    assert.equal(motion.tween.start, 20);
+    assert.equal(motion.tween.start, 0);
+    assert.equal(motion.wheelUntil, null);
     let previous = held;
     let previousSpeed = Infinity;
-    for (let t = 28; t <= 400; t += 8) {
+    for (let t = 8; t <= 400; t += 8) {
       motion.update(t);
       const speed = (motion.position - previous) * direction;
       assert.ok(speed >= -1e-10 && speed <= previousSpeed + 1e-10);
+      if (t < 320) assert.ok(speed > 0, 'No pause before reaching the destination');
       assert.ok(motion.position >= 1 && motion.position <= 3);
       previous = motion.position;
       previousSpeed = speed;
@@ -45,19 +43,19 @@ test('landing starts at the 20 ms response gap and eases monotonically to its de
   }
 });
 
-test('a 10 ms setting still follows Magic Mouse packets arriving once per frame', () => {
-  const motion = create({ loop: false, wheelPauseMs: 10 });
+test('small Magic Mouse packets accumulate, then launch a complete animation', () => {
+  const motion = create({ loop: false, wheelPauseMs: 10, commitThreshold: 0.05 });
   motion.wheelBy(24, 800, 0);
   const first = motion.position;
   motion.update(16);
   assert.equal(motion.position, first);
   assert.equal(motion.wheelBy(24, 800, 16), true);
-  assert.ok(motion.position > first);
-  assert.ok(motion.wheelUntil >= 16 + MIN_WHEEL_RELEASE_MS);
+  assert.equal(motion.tween.start, 16);
+  assert.equal(motion.wheelUntil, null);
   motion.update(35);
-  assert.equal(motion.tween, null);
-  motion.update(42);
-  assert.notEqual(motion.tween, null);
+  assert.ok(motion.position > first);
+  motion.update(500);
+  assert.equal(motion.position, 1);
 });
 
 test('old momentum after the response gap cannot retarget or delay the landing', () => {
@@ -82,9 +80,9 @@ test('a fresh gesture interrupts an unfinished landing immediately and selects t
   const visible = motion.position;
   assert.ok(visible > 0 && visible < 1);
   motion.wheelBy(180, 800, 130);
-  assert.ok(motion.position > visible && motion.position < 2);
+  close(motion.position, visible);
   assert.equal(motion.target, 2);
-  assert.equal(motion.tween, null);
+  assert.equal(motion.tween.start, 130);
   motion.update(600);
   assert.equal(motion.position, 2);
 });
@@ -105,10 +103,10 @@ test('renewed acceleration after decay and deliberate reversal count as fresh ge
   assert.equal(motion.position, 2);
 });
 
-test('a subthreshold gesture returns to its origin; sensitivity changes commitment', () => {
+test('subthreshold input does not displace the card; sensitivity changes commitment', () => {
   const motion = create();
   motion.wheelBy(60, 800, 0);
-  assert.ok(motion.position > 0);
+  assert.equal(motion.position, 0);
   assert.equal(motion.target, 0);
   motion.update(500);
   assert.equal(motion.position, 0);
