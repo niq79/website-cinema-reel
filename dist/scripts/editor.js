@@ -202,18 +202,18 @@ export function createCardEditor(reel, sourceCollection) {
   let drag = null;
 
   function placeEditor(left, top, save = false) {
-    const position = constrainEditorPosition(left, top, root.offsetWidth, root.offsetHeight, innerWidth, innerHeight);
-    root.style.left = `${position.left}px`;
-    root.style.top = `${position.top}px`;
-    root.style.bottom = 'auto';
+    const position = constrainEditorPosition(left, top, panel.offsetWidth, panel.offsetHeight, innerWidth, innerHeight);
+    panel.style.left = `${position.left}px`;
+    panel.style.top = `${position.top}px`;
+    panel.style.bottom = 'auto';
     if (save) localStorage.setItem(EDITOR_POSITION_KEY, JSON.stringify(position));
   }
 
   function restoreEditorPosition() {
     if (!desktopEditor.matches) {
-      root.style.removeProperty('left');
-      root.style.removeProperty('top');
-      root.style.removeProperty('bottom');
+      panel.style.removeProperty('left');
+      panel.style.removeProperty('top');
+      panel.style.removeProperty('bottom');
       return;
     }
     try {
@@ -224,14 +224,14 @@ export function createCardEditor(reel, sourceCollection) {
 
   function resetEditorPosition() {
     localStorage.removeItem(EDITOR_POSITION_KEY);
-    root.style.removeProperty('left');
-    root.style.removeProperty('top');
-    root.style.removeProperty('bottom');
+    panel.style.removeProperty('left');
+    panel.style.removeProperty('top');
+    panel.style.removeProperty('bottom');
   }
 
   header.addEventListener('pointerdown', event => {
     if (!desktopEditor.matches || event.button !== 0 || event.target.closest('button,input,select,textarea,a')) return;
-    const rect = root.getBoundingClientRect();
+    const rect = panel.getBoundingClientRect();
     drag = { id:event.pointerId, offsetX:event.clientX - rect.left, offsetY:event.clientY - rect.top };
     header.setPointerCapture(event.pointerId);
     root.classList.add('is-dragging');
@@ -243,7 +243,7 @@ export function createCardEditor(reel, sourceCollection) {
   });
   const finishDrag = event => {
     if (!drag || drag.id !== event.pointerId) return;
-    const rect = root.getBoundingClientRect();
+    const rect = panel.getBoundingClientRect();
     drag = null;
     root.classList.remove('is-dragging');
     if (header.hasPointerCapture(event.pointerId)) header.releasePointerCapture(event.pointerId);
@@ -254,8 +254,8 @@ export function createCardEditor(reel, sourceCollection) {
   resetPosition.addEventListener('click', resetEditorPosition);
   desktopEditor.addEventListener('change', restoreEditorPosition);
   window.addEventListener('resize', () => {
-    if (!desktopEditor.matches || !root.style.top) return;
-    const rect = root.getBoundingClientRect();
+    if (!desktopEditor.matches || !panel.style.top) return;
+    const rect = panel.getBoundingClientRect();
     placeEditor(rect.left, rect.top, true);
   });
   restoreEditorPosition();
@@ -795,8 +795,8 @@ export function createCardEditor(reel, sourceCollection) {
     panel.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
     if (!open && panel.contains(document.activeElement)) toggle.focus();
-    if (desktopEditor.matches && root.style.top) requestAnimationFrame(() => {
-      const rect = root.getBoundingClientRect();
+    if (open && desktopEditor.matches && panel.style.top) requestAnimationFrame(() => {
+      const rect = panel.getBoundingClientRect();
       placeEditor(rect.left, rect.top, true);
     });
   }
