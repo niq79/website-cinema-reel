@@ -34,22 +34,20 @@
       "id": "blueprint-no-seven",
       "layout": "cinematic",
       "title": [
-        "Blueprint",
-        "No. 7"
+        "Melers Oy"
       ],
-      "eyebrow": "True/False · True Life Fund",
-      "category": "Hybrid documentary",
-      "year": "2024",
+      "category": "Industrial laundry",
+      "year": "Acquired 2026",
       "credit": {
-        "label": "Director",
-        "value": "Sam Binns"
+        "label": "Turku",
+        "value": "Finland"
       },
       "image": {
-        "src": "/assets/blueprint.jpg",
+        "src": "https://www.askelventures.com/melers/laundromat3.webp",
         "alt": "A person standing beneath green fluorescent lights in a concrete passage",
         "focus": {
           "desktop": { "x": 50, "y": 50 },
-          "mobile": { "x": 50, "y": 50 }
+          "mobile": { "x": 100, "y": 52.016939092320335 }
         },
         "overlay": {
           "mode": "both",
@@ -68,23 +66,13 @@
       },
       "highlights": [
         {
-          "label": "True Life Fund",
-          "quote": "A portrait of now",
-          "stars": 5
-        },
-        {
-          "label": "Best First Feature",
-          "quote": "Raw & unnerving",
-          "stars": 4
-        },
-        {
-          "label": "Critics Prize",
-          "quote": "Essential viewing",
+          "label": "Laundromats \"R\" Us",
+          "quote": "It's fucking clean!",
           "stars": 5
         }
       ],
       "details": {
-        "label": "Explore film",
+        "label": "Explore",
         "paragraphs": [
           "An architect of the everyday traces seven anonymous lives across a single city block. Captured in long, unblinking takes, the film constructs an atlas of urban intimacy — strangers passing as a single organism, separated only by the gravity of their private orbits."
         ],

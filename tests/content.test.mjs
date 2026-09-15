@@ -12,6 +12,8 @@ test('the shipped collection validates, with both reusable layouts', () => {
   const data = validateCollection(source);
   assert.equal(data.cards.length, 3);
   assert.deepEqual([...new Set(data.cards.map(card => card.layout))], ['cinematic', 'editorial']);
+  assert.deepEqual(data.cards[0].title, ['Melers Oy']);
+  assert.equal(data.cards[0].image.src, 'https://www.askelventures.com/melers/laundromat3.webp');
 });
 
 test('a generic company card needs no film metadata or detail panel', () => {

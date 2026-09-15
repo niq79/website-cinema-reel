@@ -11,13 +11,11 @@ try {
   document.querySelector('meta[name="description"]').content = data.site.description || '';
   const reel = new CinemaReel(data);
   const query = new URLSearchParams(location.search);
-  if (query.get('edit') === '1') {
+  const editing = query.get('edit') === '1';
+  const debugging = query.get('debug') === '1';
+  if (editing || debugging) {
     const { createCardEditor } = await import('./editor.js');
-    createCardEditor(reel, data);
-  }
-  if (query.get('debug') === '1') {
-    const { createMotionPanel } = await import('./debug.js');
-    createMotionPanel(reel);
+    createCardEditor(reel, data, { initialView:debugging && !editing ? 'motion' : 'cards' });
   }
 } catch (error) {
   const notice = document.querySelector('#load-error');

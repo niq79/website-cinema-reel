@@ -1077,6 +1077,51 @@ a {
 
 .editor-status.is-error { color:#ffb1a8; }
 
+.editor-tabs {
+  flex:none;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+  padding:8px 16px;
+  border-bottom:1px solid #ffffff12;
+}
+
+.editor-tab {
+  min-height:38px;
+  border-radius:7px;
+  color:#9fa29a;
+  background:#242522;
+}
+
+.editor-tab[aria-selected=true] {
+  color:#11130f;
+  background:#c5d3aa;
+}
+
+.editor-card-pane {
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.editor-motion-pane {
+  flex:1;
+  min-height:0;
+}
+
+.motion-controls.is-embedded {
+  height:100%;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:4px 16px 18px;
+  scrollbar-width:thin;
+}
+
+.motion-controls.is-embedded>.motion-hint {
+  margin-top:8px;
+}
+
 .editor-card-rail {
   flex:none;
   display:flex;

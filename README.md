@@ -1,6 +1,6 @@
 # Cinema Reel
 
-A local demo template inspired by the supplied Cinema Reel specification. Three fictional film cards demonstrate two reusable layouts. Content, rendering, and navigation are separate so the template can later carry Askel Ventures content without changing the scrolling logic.
+A local demo template inspired by the supplied Cinema Reel specification. Three cards demonstrate two reusable layouts, including an initial Askel Ventures company card. Content, rendering, and navigation are separate so the collection can change without changing the scrolling logic.
 
 ## Run locally
 
@@ -14,19 +14,18 @@ Open **http://127.0.0.1:5173**. No dependency installation or build is needed. S
 
 The published demo is **https://niq79.github.io/website-cinema-reel/**.
 
-## Card editor
+## Site editor
 
-Open **http://127.0.0.1:5173/?edit=1** locally, or **https://niq79.github.io/website-cinema-reel/?edit=1** on any device. The floating Card editor changes the real reel live, including:
+Open **http://127.0.0.1:5173/?edit=1** locally, or **https://niq79.github.io/website-cinema-reel/?edit=1** on any device. One fixed **Edit** switch opens the floating Site editor. Its two tabs change the live reel:
 
-- card selection, creation, duplication, ordering, deletion, and undo;
-- cinematic or editorial text layout;
-- title lines, metadata, summary, credit, highlights, and detail-panel content;
-- image source, alternative text, and draggable desktop/mobile focal points;
-- per-card linear, radial, combined, or disabled overlays, with optional separate mobile settings.
+- **Cards** provides card selection, creation, duplication, ordering, deletion, and undo; cinematic or editorial layout; copy, metadata, highlights, and detail content; image source, alternative text, draggable desktop/mobile focal points; and per-card linear, radial, combined, or disabled overlays.
+- **Motion** provides every reel, text, image, and appearance control with live preview and detailed `?` tooltips. Click a displayed number to type an exact JSON value, including values beyond the slider's recommended range when they remain within the wider safe range.
 
-The editor autosaves a draft in that browser's local storage. A phone and computer therefore have separate drafts. **Copy JSON** or **Download** exports the complete collection; **Import** loads and validates a collection; **Reset draft** restores the currently published `cards.json`, and its result can still be undone during the session.
+Both tabs edit one shared draft. The editor autosaves the complete `site`, `settings`, and `cards` collection in that browser's local storage. A phone and computer therefore have separate drafts. **Undo** follows changes from either tab. **Copy JSON** or **Download** exports the complete collection; **Import** loads and validates one; **Reset draft** restores the currently published `cards.json`, and its result can still be undone during the session.
 
-On desktop, drag the editor panel by its header to place it anywhere inside the browser window. Its position is remembered on that device, and the header's **Reset** control returns it to the lower-left corner. The **Edit cards** toggle stays anchored to the lower-left throughout. The editor remains fixed on mobile so it cannot be dragged off-screen.
+On desktop, drag the editor panel by its header to place it anywhere inside the browser window. Its position is remembered on that device, and the header's **Reset** control returns it to the lower-left corner. The **Edit** switch stays anchored to the lower-left throughout. The editor remains fixed on mobile so it cannot be dragged off-screen.
+
+The older `?debug=1` URL remains compatible and opens the same Site editor on its **Motion** tab. There is no separate motion draft or second switch.
 
 GitHub Pages cannot write directly to the repository. To publish an edited draft, replace **[dist/content/cards.json](dist/content/cards.json)** with the exported file, commit it, and push `main`. The Pages workflow then validates and deploys it automatically.
 
@@ -85,24 +84,24 @@ To add details:
 }
 ```
 
-Put new images in **dist/assets/**. The three bundled images and both fonts are stored locally; the shipped page makes no external asset requests. External URLs in your own content will require a network connection.
+Put new images in **dist/assets/** for local assets, or use an HTTPS image URL. The Melers card currently loads its image from askelventures.com, so it requires a network connection. The other demo images and both fonts are stored locally.
 
 The `site` object controls the browser title, description, and accessible collection name. The reel has no visible header or footer. Film-specific labels are demo content, not required template fields.
 
-## Live motion settings
+## Motion controls
 
-Open **http://127.0.0.1:5173/?debug=1** to show the floating Motion settings panel. It is absent on ordinary visits. The Image group opens first so you can compare **Off**, **Blur to sharp** (default), and **Frost**. Open the other groups for motion, text, and appearance controls. The panel remains open while you scroll elsewhere on the reel, and its own controls keep their native scrolling and keyboard behavior.
+Open the Site editor and choose **Motion**. The Motion group opens first; the other groups contain text, image, and appearance controls. The editor remains open while you scroll elsewhere on the reel, and its controls keep their native scrolling and keyboard behavior.
 
-Changes apply immediately and last until refresh. The `?` beside every control opens a detailed explanation on hover, keyboard focus, or tap; tap again or press Escape to close it. Click a displayed number to type an exact JSON value, then press Enter or click away. Typed values can go beyond the slider's recommended range, within the wider safe range shown by the number field. The slider remains at its nearest endpoint until the value returns to its visual range. **Reset defaults** restores the supplied animation defaults. **Copy settings JSON** copies the complete object: replace `settings` in [dist/content/cards.json](dist/content/cards.json) to keep it. If clipboard access is unavailable, the panel reveals selectable JSON. The browser does not write to your content file.
+Changes apply immediately and persist in the shared browser draft. The `?` beside every control opens a detailed explanation on hover, keyboard focus, or tap; tap again or press Escape to close it. Click a displayed number to type an exact value, then press Enter or click away. The slider remains at its nearest endpoint when an exact value is outside its visual range. **Reset motion defaults** resets only the motion settings while keeping the cards and loop choice. Use the Site editor's shared JSON actions to keep or transfer the complete result.
 
-| Group | Controls and defaults |
+| Group | Controls and current saved values |
 | --- | --- |
-| Motion | Sensitivity 1×; commit threshold 16% of a card pitch; landing response 20 ms; maximum landing duration 320 ms; deceleration strength 3; gesture separation 120 ms. |
-| Text | Maximum blur 32 px; moving blur 8 px; clearing time 120 ms. The moving blur never exceeds the maximum blur. |
-| Image | Parallax 83%; treatment Blur to sharp; blur radius 12 px; intensity 100%; clearing time 160 ms; frost opacity 16%. |
-| Appearance | Edge vignette strength 100%, depth 10dvh; card spacing 5dvh; corner radius 28 px. |
+| Motion | Wheel sensitivity 0.5×; commit threshold 10%; touch sensitivity 1.5×; touch threshold 10%; landing response 80 ms; maximum landing duration 1500 ms; deceleration strength 5; gesture separation 100 ms. |
+| Text | Maximum blur 200 px; moving blur 0 px; clearing time 0 ms. |
+| Image | Parallax 50%; treatment Off; blur radius 14 px; intensity 80%; clearing time 0 ms; frost opacity 19%. |
+| Appearance | Edge vignette strength 100%, depth 30dvh; card spacing 10dvh; corner radius 48 px. |
 
-The schema provides valid ranges and defaults for all settings. `loop` remains a content-file option: set it to `false` for a presentation with a defined beginning and end. It is preserved by the panel's reset action.
+The schema provides valid ranges and defaults for all settings. Set `loop` to `false` for a presentation with a defined beginning and end. It is preserved by the motion-reset action.
 
 ## How scrolling works
 
@@ -145,7 +144,7 @@ npm test
 npm run check
 ```
 
-The tests cover one-card gesture bounds, the response gap, monotonic landings, fresh-gesture interruption, momentum suppression, frame-rate independence, loop seams, touch release/cancellation, finite and single-card decks, reduced motion, symmetric text/image effects, image coverage, settings/schema consistency, safe gradient generation, and content editing. The static check validates the shipped content, JavaScript syntax/imports, and local assets. The reel and Card editor are also checked in a browser at desktop and 393×852 mobile viewport sizes.
+The tests cover one-card gesture bounds, the response gap, monotonic landings, fresh-gesture interruption, momentum suppression, frame-rate independence, loop seams, touch release/cancellation, finite and single-card decks, reduced motion, symmetric text/image effects, image coverage, settings/schema consistency, safe gradient generation, and content editing. The static check validates the shipped content, JavaScript syntax/imports, and local assets. The reel and Site editor are also checked in a browser at desktop and 393×852 mobile viewport sizes.
 
 The authored site lives directly in `dist/`; it is source, not disposable build output. `.openai/hosting.json` describes that static directory for compatible static hosting.
 

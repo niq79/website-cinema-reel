@@ -1,5 +1,6 @@
 import { element, focusFor, imageSource, overlayBackground } from './cards.js';
 import { validateCollection } from './content.js';
+import { createMotionControls } from './debug.js';
 
 export const EDITOR_STORAGE_KEY = 'cinema-reel:card-draft:v1';
 export const EDITOR_POSITION_KEY = 'cinema-reel:card-editor-position:v1';
@@ -123,7 +124,7 @@ function ownOverlay(card, device) {
   return card.image.overlay?.mobile;
 }
 
-export function createCardEditor(reel, sourceCollection) {
+export function createCardEditor(reel, sourceCollection, { initialView = 'cards' } = {}) {
   const published = clone(sourceCollection);
   let collection = clone(sourceCollection);
   let selectedIndex = reel.index;
@@ -150,7 +151,7 @@ export function createCardEditor(reel, sourceCollection) {
 
   const root = element('div', 'card-editor');
   root.dataset.noReel = '';
-  const toggle = button('Edit cards', 'editor-toggle');
+  const toggle = button('Edit', 'editor-toggle');
   toggle.setAttribute('aria-controls', 'card-editor-panel');
   const panel = element('aside', 'editor-panel');
   panel.id = 'card-editor-panel';
@@ -158,22 +159,39 @@ export function createCardEditor(reel, sourceCollection) {
 
   const header = element('div', 'editor-header');
   const headingWrap = element('div');
-  const heading = element('h2', '', 'Card editor');
+  const heading = element('h2', '', 'Site editor');
   heading.id = 'card-editor-title';
   headingWrap.append(heading, element('p', '', 'Live draft · drag this header on desktop'));
   const headerActions = element('div', 'editor-header-actions');
   const resetPosition = button('Reset', 'editor-reset-position');
   resetPosition.setAttribute('aria-label', 'Reset editor position');
   const close = button('×', 'editor-close');
-  close.setAttribute('aria-label', 'Close card editor');
+  close.setAttribute('aria-label', 'Close site editor');
   headerActions.append(resetPosition, close);
   header.append(headingWrap, headerActions);
 
   const status = element('p', 'editor-status', initialMessage);
   status.setAttribute('role', 'status');
+  const tabs = element('div', 'editor-tabs');
+  tabs.setAttribute('role', 'tablist');
+  tabs.setAttribute('aria-label', 'Editor view');
+  const cardsTab = button('Cards', 'editor-tab');
+  cardsTab.setAttribute('role', 'tab');
+  cardsTab.setAttribute('aria-controls', 'editor-cards-pane');
+  const motionTab = button('Motion', 'editor-tab');
+  motionTab.setAttribute('role', 'tab');
+  motionTab.setAttribute('aria-controls', 'editor-motion-pane');
+  tabs.append(cardsTab, motionTab);
+  const cardPane = element('div', 'editor-card-pane');
+  cardPane.id = 'editor-cards-pane';
+  cardPane.setAttribute('role', 'tabpanel');
   const cardRail = element('div', 'editor-card-rail');
   cardRail.setAttribute('aria-label', 'Cards');
   const form = element('div', 'editor-form');
+  cardPane.append(cardRail, form);
+  const motionPane = element('div', 'editor-motion-pane');
+  motionPane.id = 'editor-motion-pane';
+  motionPane.setAttribute('role', 'tabpanel');
   const footer = element('div', 'editor-footer');
   const undo = button('Undo');
   const add = button('Add card');
@@ -181,6 +199,7 @@ export function createCardEditor(reel, sourceCollection) {
   const moveUp = button('Move up');
   const moveDown = button('Move down');
   const remove = button('Delete', 'editor-danger');
+  const cardActions = [add, duplicate, moveUp, moveDown, remove];
   const copyJson = button('Copy JSON', 'editor-primary');
   const downloadJson = button('Download');
   const importJson = button('Import');
@@ -194,9 +213,17 @@ export function createCardEditor(reel, sourceCollection) {
   fallback.hidden = true;
   fallback.setAttribute('aria-label', 'Collection JSON');
   footer.append(undo, add, duplicate, moveUp, moveDown, remove, copyJson, downloadJson, importJson, reset, file, fallback);
-  panel.append(header, status, cardRail, form, footer);
+  panel.append(header, tabs, status, cardPane, motionPane, footer);
   root.append(panel, toggle);
   document.body.append(root);
+
+  const motionControls = createMotionControls(reel, {
+    embedded:true,
+    onChange:(patch, key) => editSettings(patch, key),
+    onCommit:() => endEdit(),
+  });
+  motionPane.append(motionControls.root);
+  let activeView = initialView === 'motion' ? 'motion' : 'cards';
 
   const desktopEditor = matchMedia('(min-width:701px)');
   let drag = null;
@@ -306,6 +333,14 @@ export function createCardEditor(reel, sourceCollection) {
       reel.replaceCards(collection.cards, selectedIndex);
     } else scheduleRepaint();
     if (rebuild) renderForm();
+    undo.disabled = history.length === 0;
+  }
+
+  function editSettings(patch, key) {
+    checkpoint(`motion-${key}`);
+    reel.applySettings(patch);
+    collection.settings = clone(reel.settings);
+    persist();
     undo.disabled = history.length === 0;
   }
 
@@ -697,6 +732,7 @@ export function createCardEditor(reel, sourceCollection) {
     selectedIndex = clamp(selectedIndex, 0, collection.cards.length - 1);
     reel.applySettings(collection.settings);
     reel.replaceCards(collection.cards, selectedIndex);
+    motionControls.sync();
     localStorage.setItem(EDITOR_STORAGE_KEY, exportValue());
     renderCardRail();
     renderForm();
@@ -724,6 +760,7 @@ export function createCardEditor(reel, sourceCollection) {
     localStorage.setItem(EDITOR_STORAGE_KEY, exportValue());
     reel.applySettings(collection.settings);
     reel.replaceCards(collection.cards, selectedIndex);
+    motionControls.sync();
     renderCardRail();
     renderForm();
     setStatus('Undid the last edit.');
@@ -791,6 +828,31 @@ export function createCardEditor(reel, sourceCollection) {
   });
   reset.addEventListener('click', () => replaceCollection(published, 'Reset to the published content.'));
 
+  function setView(view) {
+    activeView = view;
+    const showingCards = view === 'cards';
+    cardPane.hidden = !showingCards;
+    motionPane.hidden = showingCards;
+    cardsTab.setAttribute('aria-selected', String(showingCards));
+    motionTab.setAttribute('aria-selected', String(!showingCards));
+    cardsTab.tabIndex = showingCards ? 0 : -1;
+    motionTab.tabIndex = showingCards ? -1 : 0;
+    cardActions.forEach(control => { control.hidden = !showingCards; });
+    if (!showingCards) motionControls.sync();
+    else motionControls.closeTooltip();
+    endEdit();
+  }
+
+  cardsTab.addEventListener('click', () => setView('cards'));
+  motionTab.addEventListener('click', () => setView('motion'));
+  tabs.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    const nextView = activeView === 'cards' ? 'motion' : 'cards';
+    setView(nextView);
+    (nextView === 'cards' ? cardsTab : motionTab).focus();
+  });
+
   function setOpen(open) {
     panel.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
@@ -817,5 +879,6 @@ export function createCardEditor(reel, sourceCollection) {
 
   renderCardRail();
   renderForm();
+  setView(activeView);
   setOpen(true);
 }
