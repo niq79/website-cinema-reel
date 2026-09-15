@@ -2,6 +2,7 @@ import { element, focusFor, imageSource, overlayBackground } from './cards.js';
 import { validateCollection } from './content.js';
 
 export const EDITOR_STORAGE_KEY = 'cinema-reel:card-draft:v1';
+export const EDITOR_POSITION_KEY = 'cinema-reel:card-editor-position:v1';
 
 export const DEFAULT_OVERLAY = Object.freeze({
   mode:'both',
@@ -28,6 +29,13 @@ export function uniqueCardId(cards, preferred, ignoredIndex = -1) {
   let suffix = 2;
   while (cards.some((card, index) => index !== ignoredIndex && card.id === id)) id = `${base}-${suffix++}`;
   return id;
+}
+
+export function constrainEditorPosition(left, top, width, height, viewportWidth, viewportHeight, margin = 8) {
+  return {
+    left:clamp(left, margin, Math.max(margin, viewportWidth - width - margin)),
+    top:clamp(top, margin, Math.max(margin, viewportHeight - height - margin)),
+  };
 }
 
 export function createDefaultCard(cards, image) {
@@ -152,10 +160,14 @@ export function createCardEditor(reel, sourceCollection) {
   const headingWrap = element('div');
   const heading = element('h2', '', 'Card editor');
   heading.id = 'card-editor-title';
-  headingWrap.append(heading, element('p', '', 'Live draft · stored on this device'));
+  headingWrap.append(heading, element('p', '', 'Live draft · drag this header on desktop'));
+  const headerActions = element('div', 'editor-header-actions');
+  const resetPosition = button('Reset', 'editor-reset-position');
+  resetPosition.setAttribute('aria-label', 'Reset editor position');
   const close = button('×', 'editor-close');
   close.setAttribute('aria-label', 'Close card editor');
-  header.append(headingWrap, close);
+  headerActions.append(resetPosition, close);
+  header.append(headingWrap, headerActions);
 
   const status = element('p', 'editor-status', initialMessage);
   status.setAttribute('role', 'status');
@@ -185,6 +197,68 @@ export function createCardEditor(reel, sourceCollection) {
   panel.append(header, status, cardRail, form, footer);
   root.append(panel, toggle);
   document.body.append(root);
+
+  const desktopEditor = matchMedia('(min-width:701px)');
+  let drag = null;
+
+  function placeEditor(left, top, save = false) {
+    const position = constrainEditorPosition(left, top, root.offsetWidth, root.offsetHeight, innerWidth, innerHeight);
+    root.style.left = `${position.left}px`;
+    root.style.top = `${position.top}px`;
+    root.style.bottom = 'auto';
+    if (save) localStorage.setItem(EDITOR_POSITION_KEY, JSON.stringify(position));
+  }
+
+  function restoreEditorPosition() {
+    if (!desktopEditor.matches) {
+      root.style.removeProperty('left');
+      root.style.removeProperty('top');
+      root.style.removeProperty('bottom');
+      return;
+    }
+    try {
+      const saved = JSON.parse(localStorage.getItem(EDITOR_POSITION_KEY));
+      if (Number.isFinite(saved?.left) && Number.isFinite(saved?.top)) placeEditor(saved.left, saved.top);
+    } catch { localStorage.removeItem(EDITOR_POSITION_KEY); }
+  }
+
+  function resetEditorPosition() {
+    localStorage.removeItem(EDITOR_POSITION_KEY);
+    root.style.removeProperty('left');
+    root.style.removeProperty('top');
+    root.style.removeProperty('bottom');
+  }
+
+  header.addEventListener('pointerdown', event => {
+    if (!desktopEditor.matches || event.button !== 0 || event.target.closest('button,input,select,textarea,a')) return;
+    const rect = root.getBoundingClientRect();
+    drag = { id:event.pointerId, offsetX:event.clientX - rect.left, offsetY:event.clientY - rect.top };
+    header.setPointerCapture(event.pointerId);
+    root.classList.add('is-dragging');
+    event.preventDefault();
+  });
+  header.addEventListener('pointermove', event => {
+    if (!drag || drag.id !== event.pointerId) return;
+    placeEditor(event.clientX - drag.offsetX, event.clientY - drag.offsetY);
+  });
+  const finishDrag = event => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const rect = root.getBoundingClientRect();
+    drag = null;
+    root.classList.remove('is-dragging');
+    if (header.hasPointerCapture(event.pointerId)) header.releasePointerCapture(event.pointerId);
+    placeEditor(rect.left, rect.top, true);
+  };
+  header.addEventListener('pointerup', finishDrag);
+  header.addEventListener('pointercancel', finishDrag);
+  resetPosition.addEventListener('click', resetEditorPosition);
+  desktopEditor.addEventListener('change', restoreEditorPosition);
+  window.addEventListener('resize', () => {
+    if (!desktopEditor.matches || !root.style.top) return;
+    const rect = root.getBoundingClientRect();
+    placeEditor(rect.left, rect.top, true);
+  });
+  restoreEditorPosition();
 
   function setStatus(message, error = false) {
     status.textContent = message;
@@ -721,6 +795,10 @@ export function createCardEditor(reel, sourceCollection) {
     panel.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
     if (!open && panel.contains(document.activeElement)) toggle.focus();
+    if (desktopEditor.matches && root.style.top) requestAnimationFrame(() => {
+      const rect = root.getBoundingClientRect();
+      placeEditor(rect.left, rect.top, true);
+    });
   }
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   close.addEventListener('click', () => setOpen(false));

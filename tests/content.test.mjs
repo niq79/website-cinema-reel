@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { DEFAULT_SETTINGS, SETTING_DESCRIPTIONS, SETTING_FIELDS, validateSettings } from '../dist/scripts/settings.js';
 import { validateCollection } from '../dist/scripts/content.js';
 import { overlayBackground } from '../dist/scripts/cards.js';
-import { createDefaultCard, slugify, uniqueCardId } from '../dist/scripts/editor.js';
+import { constrainEditorPosition, createDefaultCard, slugify, uniqueCardId } from '../dist/scripts/editor.js';
 
 const source = JSON.parse(await readFile(new URL('../dist/content/cards.json', import.meta.url), 'utf8'));
 
@@ -57,6 +57,12 @@ test('the card editor creates safe unique IDs and a valid starter card', () => {
   cards.push(created);
   assert.equal(created.id, 'new-card');
   assert.equal(validateCollection({ site:source.site, settings:source.settings, cards }).cards.at(-1).title[0], 'New card');
+});
+
+test('the desktop card editor stays inside the browser window', () => {
+  assert.deepEqual(constrainEditorPosition(-40, 900, 430, 700, 1440, 1000), { left:8, top:292 });
+  assert.deepEqual(constrainEditorPosition(600, 120, 430, 700, 1440, 1000), { left:600, top:120 });
+  assert.deepEqual(constrainEditorPosition(50, 50, 500, 900, 390, 800), { left:8, top:8 });
 });
 
 test('editing mistakes identify the exact card field', () => {

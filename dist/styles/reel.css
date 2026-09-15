@@ -997,7 +997,7 @@ a {
 .editor-panel {
   display:flex;
   flex-direction:column;
-  max-height:min(90dvh,860px);
+  max-height:min(76dvh,760px);
   margin-bottom:10px;
   overflow:hidden;
   overscroll-behavior:contain;
@@ -1018,7 +1018,12 @@ a {
   gap:16px;
   padding:12px 16px 8px;
   border-bottom:1px solid #ffffff12;
+  cursor:grab;
+  user-select:none;
 }
+
+.card-editor.is-dragging .editor-header { cursor:grabbing; }
+.card-editor.is-dragging { user-select:none; }
 
 .editor-header h2 {
   margin:0;
@@ -1030,6 +1035,20 @@ a {
   margin:2px 0 0;
   color:#a9aca4;
   font-size:11px;
+}
+
+.editor-header-actions {
+  display:flex;
+  align-items:center;
+  gap:2px;
+}
+
+.editor-reset-position {
+  min-height:36px;
+  padding:0 8px;
+  color:#aeb1aa;
+  background:transparent;
+  font-size:10px;
 }
 
 .editor-close {
@@ -1360,6 +1379,8 @@ textarea.editor-input {
     width:calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right));
   }
   .editor-panel { max-height:calc(100dvh - 78px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+  .editor-header { cursor:default; }
+  .editor-reset-position { display:none; }
   .editor-input,.editor-color { font-size:16px; }
   .editor-footer { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .editor-stop { grid-template-columns:40px 1fr 1fr 34px; }

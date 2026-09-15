@@ -26,6 +26,8 @@ Open **http://127.0.0.1:5173/?edit=1** locally, or **https://niq79.github.io/web
 
 The editor autosaves a draft in that browser's local storage. A phone and computer therefore have separate drafts. **Copy JSON** or **Download** exports the complete collection; **Import** loads and validates a collection; **Reset draft** restores the currently published `cards.json`, and its result can still be undone during the session.
 
+On desktop, drag the editor by its header to place it anywhere inside the browser window. Its position is remembered on that device, and the header's **Reset** control returns it to the lower-left corner. The editor remains fixed on mobile so it cannot be dragged off-screen.
+
 GitHub Pages cannot write directly to the repository. To publish an edited draft, replace **[dist/content/cards.json](dist/content/cards.json)** with the exported file, commit it, and push `main`. The Pages workflow then validates and deploys it automatically.
 
 ## Add or edit a card
