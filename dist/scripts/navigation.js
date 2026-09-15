@@ -22,29 +22,40 @@ export class GestureTracker {
   constructor() { this.reset(); }
   reset() {
     this.lastTime = -Infinity;
+    this.started = -Infinity;
     this.direction = 0;
+    this.lastMagnitude = 0;
+    this.peak = 0;
     this.reversal = 0;
+    this.decayed = false;
     this.cadenceMs = 0;
   }
-  push(delta, now, quietMs, allowReversal = true) {
+  push(delta, now, quietMs) {
     const magnitude = Math.abs(delta);
     const direction = Math.sign(delta);
     const interval = now - this.lastTime;
     const quiet = interval >= quietMs;
     if (direction !== this.direction) this.reversal += magnitude;
     else this.reversal = 0;
-    const reverse = allowReversal && direction !== this.direction && this.reversal >= 10;
-    const fresh = quiet || reverse;
+    const reverse = direction !== this.direction && this.reversal >= 10;
+    const renewed = this.decayed && now - this.started >= 60 && magnitude >= Math.max(10, this.lastMagnitude * 2.2);
+    const fresh = quiet || reverse || renewed;
     if (fresh) {
+      this.started = now;
       this.direction = direction;
+      this.peak = magnitude;
+      this.decayed = false;
       this.reversal = 0;
       this.cadenceMs = 0;
     } else {
       if (Number.isFinite(interval) && interval > 0) {
         this.cadenceMs = this.cadenceMs ? this.cadenceMs * 0.65 + interval * 0.35 : interval;
       }
+      this.peak = Math.max(this.peak, magnitude);
+      if (magnitude < this.peak * 0.45) this.decayed = true;
     }
     this.lastTime = now;
+    this.lastMagnitude = magnitude;
     return fresh;
   }
 }
@@ -73,8 +84,7 @@ export function imagePose(dy, height, activity, settings, reducedMotion = false)
 /**
  * One adjacent destination per wheel gesture. Commitment starts a full eased
  * transition immediately, without waiting for release. Old momentum
- * cannot move the destination. After commitment, only a quiet interval can
- * unlock the next card; velocity changes inside one event stream stay locked.
+ * cannot move the destination. A fresh gesture may interrupt at any time.
  */
 export class ReelMotion {
   constructor({ total, ...settings }) {
@@ -157,7 +167,7 @@ export class ReelMotion {
   wheelBy(delta, pitch, now) {
     if (!Number.isFinite(delta) || !delta || this.total < 2 || this.drag) return false;
     this.update(now);
-    const fresh = this.tracker.push(delta, now, this.settings.gestureGapMs, !this.gesture?.committed);
+    const fresh = this.tracker.push(delta, now, this.settings.gestureGapMs);
     if (fresh || !this.gesture) {
       this.gesture = this.makeGesture(Math.sign(delta));
     }
