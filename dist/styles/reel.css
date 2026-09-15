@@ -189,7 +189,7 @@ a {
 .image-shade {
   position:absolute;
   inset:0;
-  background:linear-gradient(90deg,#080b0c66,transparent 75%),radial-gradient(80% 70% at 50% 50%,transparent 40%,#00000073 100%),linear-gradient(180deg,#0000006b 0%,#0000000f 22%,#0000000a 70%,#0000008c 100%);
+  background:radial-gradient(80% 70% at 50% 50%,transparent 40%,#00000073 100%),linear-gradient(180deg,#0000006b 0%,#0000000f 22%,#0000000a 70%,#0000008c 100%);
   pointer-events:none;
 }
 
