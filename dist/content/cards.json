@@ -7,7 +7,7 @@
   },
   "settings": {
     "loop": true,
-    "scrollSensitivity": 1,
+    "scrollSensitivity": 0.5,
     "commitThreshold": 0.12,
     "wheelPauseMs": 80,
     "transitionMs": 1500,
