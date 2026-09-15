@@ -10,10 +10,14 @@ const source = JSON.parse(await readFile(new URL('../dist/content/cards.json', i
 
 test('the shipped collection validates, with both reusable layouts', () => {
   const data = validateCollection(source);
-  assert.equal(data.cards.length, 3);
+  assert.equal(data.cards.length, 4);
   assert.deepEqual([...new Set(data.cards.map(card => card.layout))], ['cinematic', 'editorial']);
-  assert.deepEqual(data.cards[0].title, ['Melers Oy']);
-  assert.equal(data.cards[0].image.src, 'https://www.askelventures.com/melers/laundromat3.webp');
+  assert.deepEqual(data.cards.map(card => card.title.join(' ')), [
+    'Building compounding value',
+    'Melers Oy',
+    'Auran Pesupojat Oy',
+    'Team',
+  ]);
 });
 
 test('a generic company card needs no film metadata or detail panel', () => {
@@ -36,9 +40,10 @@ test('adding and reordering a card uses only content changes', () => {
 
 test('per-card focus points and overlays validate and produce safe gradients', () => {
   const data = validateCollection(source);
-  assert.deepEqual(data.cards[2].image.focus.mobile, { x:64, y:50 });
+  const editorial = data.cards.find(card => card.layout === 'editorial');
+  assert.deepEqual(editorial.image.focus.mobile, { x:54.90056818181818, y:65.87640398137157 });
   assert.match(overlayBackground(data.cards[0].image.overlay), /^radial-gradient\(/);
-  assert.match(overlayBackground(data.cards[2].image.overlay.mobile), /^linear-gradient\(0deg/);
+  assert.match(overlayBackground(editorial.image.overlay), /^linear-gradient\(90deg/);
 
   const badFocus = structuredClone(source);
   badFocus.cards[0].image.focus.mobile.x = 101;

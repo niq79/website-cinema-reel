@@ -31,6 +31,115 @@
   },
   "cards": [
     {
+      "id": "atlas-unfolds",
+      "layout": "cinematic",
+      "title": [
+        "Building compounding value"
+      ],
+      "eyebrow": "askel ventures",
+      "category": "Acquiring boring businesses",
+      "credit": {
+        "label": "est",
+        "value": "2026"
+      },
+      "image": {
+        "src": "https://pitch.askelventures.com/vision-skyline.png",
+        "alt": "Two people inside a small, softly lit Japanese restaurant",
+        "focus": {
+          "desktop": {
+            "x": 53.436710858585855,
+            "y": 14.807800224466892
+          },
+          "mobile": {
+            "x": 50,
+            "y": 45
+          }
+        },
+        "overlay": {
+          "mode": "both",
+          "color": "#000000",
+          "linear": {
+            "angle": 180,
+            "stops": [
+              {
+                "position": 0,
+                "opacity": 0.42
+              },
+              {
+                "position": 22,
+                "opacity": 0.06
+              },
+              {
+                "position": 70,
+                "opacity": 0.04
+              },
+              {
+                "position": 100,
+                "opacity": 0.55
+              }
+            ]
+          },
+          "radial": {
+            "centerX": 50,
+            "centerY": 50,
+            "width": 80,
+            "height": 70,
+            "clearUntil": 40,
+            "edgeOpacity": 0.45
+          }
+        }
+      },
+      "highlights": [
+        {
+          "label": "Best original story",
+          "quote": "Damn Girl!",
+          "stars": 5
+        },
+        {
+          "label": "The last entrepreneur",
+          "quote": "Stunning resilience",
+          "stars": 4
+        },
+        {
+          "label": "hidden in plain sight",
+          "quote": "A quiet masterwork",
+          "stars": 5
+        }
+      ],
+      "details": {
+        "label": "our thesis",
+        "paragraphs": [
+          "A four-year journey across the high passes of Central Asia, charted entirely on foot. Norén trades narration for breath and footstep — the sky is the protagonist, the path is the verse, and what unfolds is less a documentary than an epic poem to scale."
+        ],
+        "facts": [
+          {
+            "label": "Runtime",
+            "value": "2h 12m"
+          },
+          {
+            "label": "Format",
+            "value": "65mm"
+          },
+          {
+            "label": "Year",
+            "value": "2023"
+          },
+          {
+            "label": "Country",
+            "value": "Sweden · Kazakhstan"
+          },
+          {
+            "label": "Language",
+            "value": "Silent"
+          },
+          {
+            "label": "Aspect",
+            "value": "2.20:1"
+          }
+        ]
+      }
+    },
+    {
       "id": "blueprint-no-seven",
       "layout": "cinematic",
       "title": [
@@ -46,22 +155,43 @@
         "src": "https://www.askelventures.com/melers/laundromat3.webp",
         "alt": "A person standing beneath green fluorescent lights in a concrete passage",
         "focus": {
-          "desktop": { "x": 50, "y": 50 },
-          "mobile": { "x": 100, "y": 52.016939092320335 }
+          "desktop": {
+            "x": 50,
+            "y": 50
+          },
+          "mobile": {
+            "x": 84.6377840909091,
+            "y": 54.33407907953611
+          }
         },
         "overlay": {
           "mode": "both",
           "color": "#000000",
           "linear": {
-            "angle": 180,
+            "angle": 90,
             "stops": [
-              { "position": 0, "opacity": 0.42 },
-              { "position": 22, "opacity": 0.06 },
-              { "position": 70, "opacity": 0.04 },
-              { "position": 100, "opacity": 0.55 }
+              {
+                "position": 0,
+                "opacity": 0.42
+              },
+              {
+                "position": 40,
+                "opacity": 0.04
+              },
+              {
+                "position": 100,
+                "opacity": 0.1
+              }
             ]
           },
-          "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 }
+          "radial": {
+            "centerX": 50,
+            "centerY": 50,
+            "width": 80,
+            "height": 70,
+            "clearUntil": 40,
+            "edgeOpacity": 0.45
+          }
         }
       },
       "highlights": [
@@ -105,87 +235,97 @@
       }
     },
     {
-      "id": "atlas-unfolds",
+      "id": "blueprint-no-seven-copy",
       "layout": "cinematic",
       "title": [
-        "Atlas",
-        "Unfolds"
+        "Auran",
+        "Pesupojat Oy"
       ],
-      "eyebrow": "Berlinale · Encounters",
-      "category": "Essay film",
-      "year": "2023",
+      "category": "Industrial laundry",
+      "year": "Acquired 2026",
       "credit": {
-        "label": "Director",
-        "value": "Elias Norén"
+        "label": "Turku",
+        "value": "Finland"
       },
       "image": {
-        "src": "/assets/atlas.jpg",
-        "alt": "Two people inside a small, softly lit Japanese restaurant",
+        "src": "https://auranpesupojat.fi/wp-content/uploads/2021/12/tasopesu-1.jpg",
+        "alt": "A person standing beneath green fluorescent lights in a concrete passage",
         "focus": {
-          "desktop": { "x": 50, "y": 45 },
-          "mobile": { "x": 50, "y": 45 }
+          "desktop": {
+            "x": 50,
+            "y": 50
+          },
+          "mobile": {
+            "x": 21.306818181818183,
+            "y": 48.12688338964478
+          }
         },
         "overlay": {
-          "mode": "both",
+          "mode": "linear",
           "color": "#000000",
           "linear": {
             "angle": 180,
             "stops": [
-              { "position": 0, "opacity": 0.42 },
-              { "position": 22, "opacity": 0.06 },
-              { "position": 70, "opacity": 0.04 },
-              { "position": 100, "opacity": 0.55 }
+              {
+                "position": 0,
+                "opacity": 0
+              },
+              {
+                "position": 20,
+                "opacity": 0
+              },
+              {
+                "position": 100,
+                "opacity": 0.5
+              }
             ]
           },
-          "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 }
+          "radial": {
+            "centerX": 50,
+            "centerY": 50,
+            "width": 80,
+            "height": 70,
+            "clearUntil": 40,
+            "edgeOpacity": 0.45
+          }
         }
       },
       "highlights": [
         {
-          "label": "Best Cinematography",
-          "quote": "An opulent canvas",
-          "stars": 5
-        },
-        {
-          "label": "Encounters Prize",
-          "quote": "Stunning in restraint",
-          "stars": 4
-        },
-        {
-          "label": "FIPRESCI Prize",
-          "quote": "A quiet masterwork",
+          "label": "Laundromats \"R\" Us",
+          "quote": "It's fucking clean!",
           "stars": 5
         }
       ],
       "details": {
-        "label": "Explore film",
+        "label": "Explore",
         "paragraphs": [
-          "A four-year journey across the high passes of Central Asia, charted entirely on foot. Norén trades narration for breath and footstep — the sky is the protagonist, the path is the verse, and what unfolds is less a documentary than an epic poem to scale."
+          "An architect of the everyday traces seven anonymous lives across a single city block. Captured in long, unblinking takes, the film constructs an atlas of urban intimacy — strangers passing as a single organism, separated only by the gravity of their private orbits."
         ],
         "facts": [
           {
             "label": "Runtime",
-            "value": "2h 12m"
+            "value": "1h 38m"
           },
           {
             "label": "Format",
-            "value": "65mm"
+            "value": "16mm"
           },
           {
             "label": "Year",
-            "value": "2023"
+            "value": "2024"
           },
           {
             "label": "Country",
-            "value": "Sweden · Kazakhstan"
+            "value": "UK · Germany"
           },
           {
             "label": "Language",
-            "value": "Silent"
+            "value": "English"
           },
           {
             "label": "Aspect",
-            "value": "2.20:1"
+            "value": "1.66:1"
           }
         ]
       }
@@ -194,22 +334,26 @@
       "id": "the-long-quiet",
       "layout": "editorial",
       "title": [
-        "The long",
-        "quiet"
+        "Team"
       ],
-      "eyebrow": "TIFF Docs · Platform",
-      "category": "Observational",
-      "year": "2024",
+      "eyebrow": "Founded · 2026",
+      "category": "Exceptional",
       "credit": {
-        "label": "Director",
-        "value": "Amara Okafor"
+        "label": "HElsinki",
+        "value": "epicenter"
       },
       "image": {
-        "src": "/assets/quiet.jpg",
+        "src": "https://www.askelventures.com/zoom-parallax/team.webp",
         "alt": "A cyclist disappearing into a misty forest path",
         "focus": {
-          "desktop": { "x": 50, "y": 50 },
-          "mobile": { "x": 64, "y": 50 }
+          "desktop": {
+            "x": 50,
+            "y": 50
+          },
+          "mobile": {
+            "x": 54.90056818181818,
+            "y": 65.87640398137157
+          }
         },
         "overlay": {
           "mode": "linear",
@@ -217,31 +361,37 @@
           "linear": {
             "angle": 90,
             "stops": [
-              { "position": 0, "opacity": 0.82 },
-              { "position": 38, "opacity": 0.45 },
-              { "position": 68, "opacity": 0.1 },
-              { "position": 84, "opacity": 0 }
+              {
+                "position": 0,
+                "opacity": 0.82
+              },
+              {
+                "position": 38,
+                "opacity": 0.45
+              },
+              {
+                "position": 68,
+                "opacity": 0.1
+              },
+              {
+                "position": 84,
+                "opacity": 0
+              }
             ]
           },
-          "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 },
-          "mobile": {
-            "mode": "linear",
-            "color": "#0d100f",
-            "linear": {
-              "angle": 0,
-              "stops": [
-                { "position": 0, "opacity": 0.91 },
-                { "position": 60, "opacity": 0.6 },
-                { "position": 100, "opacity": 0.27 }
-              ]
-            },
-            "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 }
+          "radial": {
+            "centerX": 50,
+            "centerY": 50,
+            "width": 80,
+            "height": 70,
+            "clearUntil": 40,
+            "edgeOpacity": 0.45
           }
         }
       },
-      "summary": "The way light moves across a room. The things we hear when we stop to listen.",
+      "summary": "Just four founders building a boring business portfolio.",
       "details": {
-        "label": "Explore film",
+        "label": "learn more",
         "paragraphs": [
           "On the eve of a six-month return to silence, four Carmelite nuns open their shutters and their letters. Okafor’s patient gaze finds devotion in the smallest gestures — the way light moves across a refectory, the way silence holds a room together long after the bell has rung."
         ],

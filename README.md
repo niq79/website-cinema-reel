@@ -1,6 +1,6 @@
 # Cinema Reel
 
-A local demo template inspired by the supplied Cinema Reel specification. Three cards demonstrate two reusable layouts, including an initial Askel Ventures company card. Content, rendering, and navigation are separate so the collection can change without changing the scrolling logic.
+A local demo template inspired by the supplied Cinema Reel specification. Four company cards demonstrate two reusable layouts and the initial Askel Ventures direction. Content, rendering, and navigation are separate so the collection can change without changing the scrolling logic.
 
 ## Run locally
 
@@ -84,7 +84,7 @@ To add details:
 }
 ```
 
-Put new images in **dist/assets/** for local assets, or use an HTTPS image URL. The Melers card currently loads its image from askelventures.com, so it requires a network connection. The other demo images and both fonts are stored locally.
+Put new images in **dist/assets/** for local assets, or use an HTTPS image URL. All four current card images use external HTTPS URLs, so they require a network connection. The bundled sample images and both fonts remain stored locally.
 
 The `site` object controls the browser title, description, and accessible collection name. The reel has no visible header or footer. Film-specific labels are demo content, not required template fields.
 
@@ -150,7 +150,7 @@ The authored site lives directly in `dist/`; it is source, not disposable build 
 
 ## Reference assets
 
-The fictional film names, text, and image IDs come from [cinema-reel.md](cinema-reel.md). The example photographs are illustrative and do not depict the fictional films described.
+The original film template, copy, and image references come from [cinema-reel.md](cinema-reel.md). The bundled sample images remain available for reuse even though the current collection uses company content and external images.
 
 - `blueprint.jpg`: https://images.unsplash.com/photo-1610847455028-9e55e62bac33
 - `atlas.jpg`: https://images.unsplash.com/photo-1596956708072-8ca0c2973887
