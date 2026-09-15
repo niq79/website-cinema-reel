@@ -47,7 +47,24 @@
       "image": {
         "src": "/assets/blueprint.jpg",
         "alt": "A person standing beneath green fluorescent lights in a concrete passage",
-        "position": "center 50%"
+        "focus": {
+          "desktop": { "x": 50, "y": 50 },
+          "mobile": { "x": 50, "y": 50 }
+        },
+        "overlay": {
+          "mode": "both",
+          "color": "#000000",
+          "linear": {
+            "angle": 180,
+            "stops": [
+              { "position": 0, "opacity": 0.42 },
+              { "position": 22, "opacity": 0.06 },
+              { "position": 70, "opacity": 0.04 },
+              { "position": 100, "opacity": 0.55 }
+            ]
+          },
+          "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 }
+        }
       },
       "highlights": [
         {
@@ -116,7 +133,24 @@
       "image": {
         "src": "/assets/atlas.jpg",
         "alt": "Two people inside a small, softly lit Japanese restaurant",
-        "position": "center 45%"
+        "focus": {
+          "desktop": { "x": 50, "y": 45 },
+          "mobile": { "x": 50, "y": 45 }
+        },
+        "overlay": {
+          "mode": "both",
+          "color": "#000000",
+          "linear": {
+            "angle": 180,
+            "stops": [
+              { "position": 0, "opacity": 0.42 },
+              { "position": 22, "opacity": 0.06 },
+              { "position": 70, "opacity": 0.04 },
+              { "position": 100, "opacity": 0.55 }
+            ]
+          },
+          "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 }
+        }
       },
       "highlights": [
         {
@@ -185,7 +219,37 @@
       "image": {
         "src": "/assets/quiet.jpg",
         "alt": "A cyclist disappearing into a misty forest path",
-        "position": "center"
+        "focus": {
+          "desktop": { "x": 50, "y": 50 },
+          "mobile": { "x": 64, "y": 50 }
+        },
+        "overlay": {
+          "mode": "linear",
+          "color": "#151614",
+          "linear": {
+            "angle": 90,
+            "stops": [
+              { "position": 0, "opacity": 0.82 },
+              { "position": 38, "opacity": 0.45 },
+              { "position": 68, "opacity": 0.1 },
+              { "position": 84, "opacity": 0 }
+            ]
+          },
+          "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 },
+          "mobile": {
+            "mode": "linear",
+            "color": "#0d100f",
+            "linear": {
+              "angle": 0,
+              "stops": [
+                { "position": 0, "opacity": 0.91 },
+                { "position": 60, "opacity": 0.6 },
+                { "position": 100, "opacity": 0.27 }
+              ]
+            },
+            "radial": { "centerX": 50, "centerY": 50, "width": 80, "height": 70, "clearUntil": 40, "edgeOpacity": 0.45 }
+          }
+        }
       },
       "summary": "The way light moves across a room. The things we hear when we stop to listen.",
       "details": {

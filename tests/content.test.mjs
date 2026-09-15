@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { DEFAULT_SETTINGS, SETTING_DESCRIPTIONS, SETTING_FIELDS, validateSettings } from '../dist/scripts/settings.js';
 import { validateCollection } from '../dist/scripts/content.js';
+import { overlayBackground } from '../dist/scripts/cards.js';
+import { createDefaultCard, slugify, uniqueCardId } from '../dist/scripts/editor.js';
 
 const source = JSON.parse(await readFile(new URL('../dist/content/cards.json', import.meta.url), 'utf8'));
 
@@ -28,6 +30,33 @@ test('adding and reordering a card uses only content changes', () => {
   assert.equal(validateCollection(edited).cards[0].id, 'a-new-card');
   edited.cards.reverse();
   assert.equal(validateCollection(edited).cards.at(-1).id, 'a-new-card');
+});
+
+test('per-card focus points and overlays validate and produce safe gradients', () => {
+  const data = validateCollection(source);
+  assert.deepEqual(data.cards[2].image.focus.mobile, { x:64, y:50 });
+  assert.match(overlayBackground(data.cards[0].image.overlay), /^radial-gradient\(/);
+  assert.match(overlayBackground(data.cards[2].image.overlay.mobile), /^linear-gradient\(0deg/);
+
+  const badFocus = structuredClone(source);
+  badFocus.cards[0].image.focus.mobile.x = 101;
+  assert.throws(() => validateCollection(badFocus), /cards\[0\]\.image\.focus\.mobile\.x/);
+  const badOverlay = structuredClone(source);
+  badOverlay.cards[0].image.overlay.color = 'black; background:url(x)';
+  assert.throws(() => validateCollection(badOverlay), /cards\[0\]\.image\.overlay\.color/);
+  const badStops = structuredClone(source);
+  badStops.cards[0].image.overlay.linear.stops[2].position = 10;
+  assert.throws(() => validateCollection(badStops), /keep stops in ascending order/);
+});
+
+test('the card editor creates safe unique IDs and a valid starter card', () => {
+  assert.equal(slugify('  New Perspectives!  '), 'new-perspectives');
+  assert.equal(uniqueCardId([{ id:'new-card' }, { id:'new-card-2' }], 'New card'), 'new-card-3');
+  const cards = source.cards.map(card => structuredClone(card));
+  const created = createDefaultCard(cards, cards[0].image);
+  cards.push(created);
+  assert.equal(created.id, 'new-card');
+  assert.equal(validateCollection({ site:source.site, settings:source.settings, cards }).cards.at(-1).title[0], 'New card');
 });
 
 test('editing mistakes identify the exact card field', () => {

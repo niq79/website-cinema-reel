@@ -15,6 +15,7 @@ export class CinemaReel {
     this.textActivity = 0;
     this.imageActivity = 0;
     this.controlState = '';
+    this.lastIndex = -1;
     this.reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
     this.motion.reducedMotion = this.reduceMotion.matches;
     this.track = document.querySelector('#track');
@@ -34,6 +35,8 @@ export class CinemaReel {
 
   render() {
     const { cards } = this;
+    this.track.replaceChildren();
+    this.pips.replaceChildren();
     if (this.loop) {
       for (let i = cards.length - LOOP_PADDING; i < cards.length; i++) {
         this.track.append(frameFor(cards[i], i, cards.length, true));
@@ -68,7 +71,23 @@ export class CinemaReel {
     this.next.setAttribute('aria-label', 'Next card');
     this.previous.title = 'Previous card (↑)';
     this.next.title = 'Next card (↓)';
-    if (cards.length < 2) document.querySelector('.reel-nav').hidden = true;
+    document.querySelector('.reel-nav').hidden = cards.length < 2;
+  }
+
+  replaceCards(cards, preferredIndex = this.index) {
+    this.cancelPointer();
+    if (this.dialog.open) this.dialog.close();
+    this.cards = cards;
+    this.motion = new ReelMotion({ ...this.settings, total:cards.length });
+    this.motion.reducedMotion = this.reduceMotion.matches;
+    const index = Math.max(0, Math.min(preferredIndex, cards.length - 1));
+    this.motion.position = this.motion.target = index;
+    this.loop = this.motion.loop;
+    this.padding = this.loop ? LOOP_PADDING : 0;
+    this.controlState = '';
+    this.lastIndex = -1;
+    this.render();
+    this.measure();
   }
 
   applySettings(patch) {
@@ -116,6 +135,10 @@ export class CinemaReel {
     });
     if (!this.motion.moving) {
       this.announcement.textContent = `${this.index + 1} of ${this.cards.length}: ${this.cards[this.index].title.join(' ')}`;
+    }
+    if (this.lastIndex !== this.index) {
+      this.lastIndex = this.index;
+      document.querySelector('#cinema').dispatchEvent(new CustomEvent('reelindexchange', { detail:{ index:this.index } }));
     }
   }
 

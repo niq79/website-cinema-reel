@@ -15,12 +15,68 @@ function arrow() {
   return svg;
 }
 
+const FALLBACK_OVERLAY = Object.freeze({
+  mode:'both',
+  color:'#000000',
+  linear:{ angle:180, stops:[
+    { position:0, opacity:0.42 },
+    { position:22, opacity:0.06 },
+    { position:70, opacity:0.04 },
+    { position:100, opacity:0.55 },
+  ] },
+  radial:{ centerX:50, centerY:50, width:80, height:70, clearUntil:40, edgeOpacity:0.45 },
+});
+
+function rgba(hex, opacity) {
+  const value = hex.replace('#', '');
+  const number = Number.parseInt(value, 16);
+  return `rgba(${number >> 16},${number >> 8 & 255},${number & 255},${opacity})`;
+}
+
+export function overlayBackground(input = FALLBACK_OVERLAY) {
+  const overlay = input || FALLBACK_OVERLAY;
+  const gradients = [];
+  if (overlay.mode === 'radial' || overlay.mode === 'both') {
+    const radial = overlay.radial || FALLBACK_OVERLAY.radial;
+    gradients.push(`radial-gradient(${radial.width}% ${radial.height}% at ${radial.centerX}% ${radial.centerY}%,${rgba(overlay.color, 0)} ${radial.clearUntil}%,${rgba(overlay.color, radial.edgeOpacity)} 100%)`);
+  }
+  if (overlay.mode === 'linear' || overlay.mode === 'both') {
+    const linear = overlay.linear || FALLBACK_OVERLAY.linear;
+    const stops = linear.stops.map(stop => `${rgba(overlay.color, stop.opacity)} ${stop.position}%`).join(',');
+    gradients.push(`linear-gradient(${linear.angle}deg,${stops})`);
+  }
+  return gradients.length ? gradients.join(',') : 'none';
+}
+
+function legacyFocus(position = 'center') {
+  const normalized = position.trim().toLowerCase();
+  if (normalized === 'center') return { x:50, y:50 };
+  const values = normalized.split(/\s+/);
+  if (values.length === 1 && ['top', 'bottom'].includes(values[0])) return { x:50, y:values[0] === 'top' ? 0 : 100 };
+  const keyword = value => ({ left:0, top:0, center:50, right:100, bottom:100 }[value] ?? 50);
+  const number = value => value?.endsWith('%') ? Number.parseFloat(value) : keyword(value);
+  return { x:number(values[0]), y:number(values[1] || 'center') };
+}
+
+export function focusFor(card, device = 'desktop') {
+  const legacy = legacyFocus(card.image.position);
+  const desktop = card.image.focus?.desktop || legacy;
+  return device === 'mobile' ? card.image.focus?.mobile || desktop : desktop;
+}
+
+export function imageSource(card) {
+  return card.image.src.startsWith('/') ? new URL(`..${card.image.src}`, import.meta.url).href : card.image.src;
+}
+
 function imageFor(card, className) {
   const img = element('img', className);
   // Content paths are relative to the site root, including on GitHub project Pages.
-  img.src = card.image.src.startsWith('/') ? new URL(`..${card.image.src}`, import.meta.url).href : card.image.src;
+  img.src = imageSource(card);
   img.alt = card.image.alt;
-  img.style.objectPosition = card.image.position || 'center';
+  const desktop = focusFor(card);
+  const mobile = focusFor(card, 'mobile');
+  img.style.setProperty('--focus-desktop', `${desktop.x}% ${desktop.y}%`);
+  img.style.setProperty('--focus-mobile', `${mobile.x}% ${mobile.y}%`);
   img.draggable = false;
   img.decoding = 'async';
   return img;
@@ -82,7 +138,12 @@ export function frameFor(card, index, total, duplicate = false) {
   frost.setAttribute('aria-hidden', 'true');
   parallax.append(img, soft);
   media.append(parallax, frost);
-  frame.append(media, element('div', 'image-shade'), content);
+  const shade = element('div', 'image-shade');
+  if (card.image.overlay) {
+    shade.style.setProperty('--overlay-desktop', overlayBackground(card.image.overlay));
+    shade.style.setProperty('--overlay-mobile', overlayBackground(card.image.overlay.mobile || card.image.overlay));
+  }
+  frame.append(media, shade, content);
   slide.append(frame);
   return slide;
 }

@@ -8,10 +8,44 @@ const string = (value, path, allowEmpty = false) => {
   if (typeof value !== 'string' || (!allowEmpty && !value.trim())) fail(path, 'expected text');
 };
 const list = (value, path) => { if (!Array.isArray(value)) fail(path, 'expected an array'); };
+const number = (value, path, min, max) => {
+  if (!Number.isFinite(value) || value < min || value > max) fail(path, `use a number between ${min} and ${max}`);
+};
 const fact = (value, path) => {
   object(value, path);
   string(value.label, `${path}.label`);
   string(value.value, `${path}.value`);
+};
+const focusPoint = (value, path) => {
+  object(value, path);
+  number(value.x, `${path}.x`, 0, 100);
+  number(value.y, `${path}.y`, 0, 100);
+};
+const overlayLayer = (value, path) => {
+  object(value, path);
+  if (!['none', 'linear', 'radial', 'both'].includes(value.mode)) fail(`${path}.mode`, 'choose none, linear, radial, or both');
+  if (!/^#[0-9a-f]{6}$/i.test(value.color || '')) fail(`${path}.color`, 'use a six-digit hex color such as #000000');
+  if (value.mode === 'linear' || value.mode === 'both') {
+    object(value.linear, `${path}.linear`);
+    number(value.linear.angle, `${path}.linear.angle`, -360, 360);
+    list(value.linear.stops, `${path}.linear.stops`);
+    if (value.linear.stops.length < 2 || value.linear.stops.length > 8) fail(`${path}.linear.stops`, 'add between 2 and 8 stops');
+    let previous = -1;
+    value.linear.stops.forEach((stop, index) => {
+      const stopPath = `${path}.linear.stops[${index}]`;
+      object(stop, stopPath);
+      number(stop.position, `${stopPath}.position`, 0, 100);
+      number(stop.opacity, `${stopPath}.opacity`, 0, 1);
+      if (stop.position < previous) fail(`${stopPath}.position`, 'keep stops in ascending order');
+      previous = stop.position;
+    });
+  }
+  if (value.mode === 'radial' || value.mode === 'both') {
+    object(value.radial, `${path}.radial`);
+    for (const key of ['centerX', 'centerY', 'clearUntil']) number(value.radial[key], `${path}.radial.${key}`, 0, 100);
+    for (const key of ['width', 'height']) number(value.radial[key], `${path}.radial.${key}`, 1, 200);
+    number(value.radial.edgeOpacity, `${path}.radial.edgeOpacity`, 0, 1);
+  }
 };
 
 export function validateCollection(data) {
@@ -48,6 +82,15 @@ export function validateCollection(data) {
       fail(`${path}.image.src`, 'use a local /assets/ path or an https:// image URL');
     }
     if (card.image.position !== undefined) string(card.image.position, `${path}.image.position`);
+    if (card.image.focus !== undefined) {
+      object(card.image.focus, `${path}.image.focus`);
+      focusPoint(card.image.focus.desktop, `${path}.image.focus.desktop`);
+      if (card.image.focus.mobile !== undefined) focusPoint(card.image.focus.mobile, `${path}.image.focus.mobile`);
+    }
+    if (card.image.overlay !== undefined) {
+      overlayLayer(card.image.overlay, `${path}.image.overlay`);
+      if (card.image.overlay.mobile !== undefined) overlayLayer(card.image.overlay.mobile, `${path}.image.overlay.mobile`);
+    }
     if (card.credit !== undefined) fact(card.credit, `${path}.credit`);
     if (card.highlights !== undefined) {
       list(card.highlights, `${path}.highlights`);

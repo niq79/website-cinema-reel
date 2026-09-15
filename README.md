@@ -12,6 +12,22 @@ npm run dev
 
 Open **http://127.0.0.1:5173**. No dependency installation or build is needed. Save your edits and refresh the page. The server listens only on your computer. To use another port: `PORT=5174 npm run dev`.
 
+The published demo is **https://niq79.github.io/website-cinema-reel/**.
+
+## Card editor
+
+Open **http://127.0.0.1:5173/?edit=1** locally, or **https://niq79.github.io/website-cinema-reel/?edit=1** on any device. The floating Card editor changes the real reel live, including:
+
+- card selection, creation, duplication, ordering, deletion, and undo;
+- cinematic or editorial text layout;
+- title lines, metadata, summary, credit, highlights, and detail-panel content;
+- image source, alternative text, and draggable desktop/mobile focal points;
+- per-card linear, radial, combined, or disabled overlays, with optional separate mobile settings.
+
+The editor autosaves a draft in that browser's local storage. A phone and computer therefore have separate drafts. **Copy JSON** or **Download** exports the complete collection; **Import** loads and validates a collection; **Reset draft** restores the currently published `cards.json`, and its result can still be undone during the session.
+
+GitHub Pages cannot write directly to the repository. To publish an edited draft, replace **[dist/content/cards.json](dist/content/cards.json)** with the exported file, commit it, and push `main`. The Pages workflow then validates and deploys it automatically.
+
 ## Add or edit a card
 
 Edit **[dist/content/cards.json](dist/content/cards.json)**. Cards appear in the order of the `cards` array. Duplicate an object, give it a unique `id`, and replace its content. Remove an object to remove its card. The navigation count updates automatically.
@@ -30,7 +46,10 @@ A minimal card:
   "image": {
     "src": "/assets/quiet.jpg",
     "alt": "A cyclist on a misty forest path",
-    "position": "70% center"
+    "focus": {
+      "desktop": { "x": 50, "y": 50 },
+      "mobile": { "x": 65, "y": 50 }
+    }
   }
 }
 ```
@@ -39,7 +58,7 @@ Only `id`, `title`, and `image` are required on a card. One or two short title l
 
 | Field | Purpose |
 | --- | --- |
-| `layout` | `cinematic` for a full-image frame; `editorial` for text beside an image. Defaults to `cinematic`. |
+| `layout` | `cinematic` or `editorial` text composition. Images remain full-bleed in both. Defaults to `cinematic`. |
 | `title` | An array with one entry per title line. |
 | `eyebrow`, `category`, `year` | Optional metadata. Omit any you do not need. |
 | `summary` | Optional short introduction. Especially useful for `editorial`. |
@@ -47,7 +66,8 @@ Only `id`, `title`, and `image` are required on a card. One or two short title l
 | `highlights` | Optional `label`, `quote`, and `stars` entries shown on desktop cinematic cards. Keep this to three short entries. |
 | `image.src` | A local `/assets/filename.jpg` path, or an HTTPS image URL. |
 | `image.alt` | Describe the actual image. Use an empty string for a purely decorative image. |
-| `image.position` | Optional crop focal point using CSS object-position, such as `center` or `70% center`. |
+| `image.focus` | Optional desktop and mobile crop focal points using `x`/`y` percentages. Mobile inherits desktop when omitted. |
+| `image.overlay` | Optional structured linear/radial shade. The Card editor is the easiest way to create and tune it. |
 | `details` | Optional detail-panel content. Omitting it also removes the Explore button. |
 
 To add details:
@@ -84,13 +104,13 @@ The schema provides valid ranges and defaults for all settings. `loop` remains a
 
 ## How scrolling works
 
-A wheel or two-finger trackpad gesture launches a complete animation to **one adjacent card** as soon as accumulated input crosses the commitment threshold. The card decelerates continuously to its destination without overshoot or a separate alignment phase. Before commitment, small inputs accumulate without displacing the card. The saved threshold is `0.12`; lower values trigger on lighter swipes, and `0` triggers on the first nonzero event.
+A wheel or two-finger trackpad gesture launches a complete animation to **one adjacent card** as soon as accumulated input crosses the commitment threshold. The card decelerates continuously to its destination without overshoot or a separate alignment phase. Before commitment, small inputs accumulate without displacing the card. The saved threshold is `0.1`; lower values trigger on lighter swipes, and `0` triggers on the first nonzero event.
 
 Landing response now only controls how long uncommitted input waits for another event, with at least 20 ms of grace adapted to wheel-event cadence. It never delays a committed transition. Landing duration and Deceleration strength control the complete animation. Wheel resistance is no longer part of this animation; touch and mouse dragging retain direct tracking with resistance and settle on release.
 
 Momentum from that gesture cannot advance another card or restart the landing. A fresh gesture may interrupt immediately, even while the previous landing is unfinished. Gesture recognition uses a quiet gap, deliberate direction reversal, or renewed acceleration after momentum has decayed. Browser wheel events do not expose actual finger release, so this is a heuristic; the separate gesture-separation control is available for tuning on your trackpad.
 
-Touch and mouse dragging also approach one adjacent destination and settle on release. Their physical tracking is independent of wheel sensitivity. Touch sensitivity controls how strongly the card follows the finger, while Touch threshold controls the physical release distance; the supplied values are 1.25× and 14% of the viewport height. Cancelling a drag returns to its starting card. Buttons and keys can retarget an unfinished transition. The model uses fractional card positions and elapsed time to preserve progress on resize and across display refresh rates. Two duplicate frames at each end preserve the neighboring previews through loop seams; duplicates are excluded from keyboard and screen-reader navigation.
+Touch and mouse dragging also approach one adjacent destination and settle on release. Their physical tracking is independent of wheel sensitivity. Touch sensitivity controls how strongly the card follows the finger, while Touch threshold controls the physical release distance; the saved values are 1.5× and 10% of the viewport height. Cancelling a drag returns to its starting card. Buttons and keys can retarget an unfinished transition. The model uses fractional card positions and elapsed time to preserve progress on resize and across display refresh rates. Two duplicate frames at each end preserve the neighboring previews through loop seams; duplicates are excluded from keyboard and screen-reader navigation.
 
 Navigation supports wheel/trackpad, vertical swipe/drag, arrow buttons, dots, arrow keys, Page Up/Down, Space/Shift+Space, and Home/End. Browser pinch zoom remains available. Reduced-motion preferences disable parallax, text effects, and image effects and make automatic landings instant; direct gesture movement remains available. Detail panels use native modal focus behavior and close with Escape, the close button, or a backdrop click. The frame clock stops after the reel and effects settle.
 
@@ -102,7 +122,7 @@ Navigation supports wheel/trackpad, vertical swipe/drag, arrow buttons, dots, ar
 - [dist/scripts/reel.js](dist/scripts/reel.js): animation, controls, and modal behavior.
 - [dist/scripts/navigation.js](dist/scripts/navigation.js): input recognition and loop calculations, independently testable without a browser.
 
-There is no custom cursor, visible header/footer, or fast-forward intro. The cards open immediately and travel across the full viewport beneath soft 10dvh top/bottom fades. A compact side indicator remains, including on mobile. Detail panels retain a subtle frame tilt.
+There is no custom cursor, visible header/footer, or fast-forward intro. The cards open immediately and travel across the full viewport beneath soft top/bottom fades; the saved fade depth is 30dvh. A compact side indicator remains, including on mobile. Detail panels retain a subtle frame tilt.
 
 The image geometry and edge fades build on §§14–16 and §24 of the supplied specification, with the latest agreed changes:
 
@@ -112,20 +132,20 @@ The image geometry and edge fades build on §§14–16 and §24 of the supplied 
 - Blur to sharp fades a duplicate image with a fixed blur filter over the sharp original. Frost also fades a pale textured overlay. Text effects are independent of image treatment. Neither effect remains on the centered card at rest.
 - The image blur kernel is not animated frame by frame, offscreen effect layers are hidden, and image blur is capped at 12 px on screens up to 700 px wide. The settings panel adapts to narrow screens. Liquid-glass distortion is deferred.
 
-To add a genuinely new layout, extend `cards.js` and the stylesheet, then add its name to `content.js` and `cards.schema.json`. Existing layouts need only JSON content changes.
+Both supplied layouts use a full-bleed image; the preset changes only the content composition. To add a genuinely new layout, extend `cards.js` and the stylesheet, then add its name to `content.js` and `cards.schema.json`. Existing layouts need only JSON content changes.
 
 ## Checks
 
-GitHub Pages publishing is prepared in `.github/workflows/pages.yml`. Once Pages is enabled with GitHub Actions as its source, each push to `main` validates the project and publishes only `dist/`. All entrypoint, font, content, and image paths support a project subdirectory. Pages activation is currently blocked because the account's plan does not support this private repository.
+GitHub Pages publishing runs through `.github/workflows/pages.yml`. Each push to `main` validates the project and publishes only `dist/`. All entrypoint, font, content, and image paths support the GitHub project subdirectory.
 
 ```sh
 npm test
 npm run check
 ```
 
-The tests cover one-card gesture bounds, the 20 ms response gap, monotonic landings, fresh-gesture interruption, momentum suppression, frame-rate independence, loop seams, touch release/cancellation, finite and single-card decks, reduced motion, symmetric text/image effects, image coverage, settings/schema consistency, JSON export roundtrips, and content editing. The static check validates the shipped content, JavaScript syntax/imports, and local assets. Interactive browser and device testing has not been performed in this session; the local preview is ready for hands-on scroll tuning.
+The tests cover one-card gesture bounds, the response gap, monotonic landings, fresh-gesture interruption, momentum suppression, frame-rate independence, loop seams, touch release/cancellation, finite and single-card decks, reduced motion, symmetric text/image effects, image coverage, settings/schema consistency, safe gradient generation, and content editing. The static check validates the shipped content, JavaScript syntax/imports, and local assets. The reel and Card editor are also checked in a browser at desktop and 393×852 mobile viewport sizes.
 
-The authored site lives directly in `dist/`; it is source, not disposable build output. `.openai/hosting.json` only describes that static directory for a possible later deployment. The project has not been registered or published.
+The authored site lives directly in `dist/`; it is source, not disposable build output. `.openai/hosting.json` describes that static directory for compatible static hosting.
 
 ## Reference assets
 

@@ -10,7 +10,12 @@ try {
   document.title = data.site.title;
   document.querySelector('meta[name="description"]').content = data.site.description || '';
   const reel = new CinemaReel(data);
-  if (new URLSearchParams(location.search).get('debug') === '1') {
+  const query = new URLSearchParams(location.search);
+  if (query.get('edit') === '1') {
+    const { createCardEditor } = await import('./editor.js');
+    createCardEditor(reel, data);
+  }
+  if (query.get('debug') === '1') {
     const { createMotionPanel } = await import('./debug.js');
     createMotionPanel(reel);
   }
