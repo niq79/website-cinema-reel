@@ -195,6 +195,22 @@ test('touch dragging stays bounded, waits for release, and supports cancellation
   assert.equal(motion.position, 1);
 });
 
+test('touch release distance is independent of wheel sensitivity', () => {
+  const positions = [];
+  for (const scrollSensitivity of [0.25, 0.5, 1, 2.5]) {
+    const motion = create({ loop: false, scrollSensitivity });
+    motion.beginDrag(0);
+    motion.dragBy(120, 800);
+    positions.push(motion.position);
+    assert.equal(motion.index, 0, 'Touch does not commit before release');
+    motion.endDrag(20, 0.14);
+    assert.equal(motion.index, 1);
+    motion.update(2000);
+    assert.equal(motion.position, 1);
+  }
+  positions.forEach(position => close(position, positions[0]));
+});
+
 test('finite ends, a single card, instant landing, and reduced motion stay usable', () => {
   const finite = create({ total: 3, loop: false });
   finite.wheelBy(-180, 800, 0);

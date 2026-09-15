@@ -155,12 +155,13 @@ export class ReelMotion {
     return { from: this.position, anchor: this.target, destination: this.limit(this.target + direction), direction, distance: 0, released: false, committed: false };
   }
   follow(gesture, delta, pitch) {
-    gesture.distance = Math.max(0, gesture.distance + delta * gesture.direction * this.settings.scrollSensitivity / pitch);
+    // Direct dragging follows physical movement; wheel sensitivity must not
+    // make touch gestures harder or easier to complete.
+    gesture.distance = Math.max(0, gesture.distance + delta * gesture.direction / pitch);
     // Approach, never pass, the destination. A visible eased finish is retained.
     const progress = Math.min(0.92, 1 - Math.exp(-gesture.distance));
     this.position = gesture.from + (gesture.destination - gesture.from) * progress;
-    if (gesture.distance >= this.settings.commitThreshold) gesture.committed = true;
-    this.target = gesture.committed ? gesture.destination : gesture.anchor;
+    this.target = gesture.anchor;
     this.direction = gesture.direction;
     this.rebase();
   }
@@ -214,9 +215,10 @@ export class ReelMotion {
     }
     this.follow(this.drag, delta, pitch);
   }
-  endDrag(now, _threshold, cancelled = false) {
+  endDrag(now, threshold = this.settings.commitThreshold, cancelled = false) {
     if (!this.drag) return;
-    this.target = this.limit(cancelled || !this.drag.committed ? this.drag.anchor : this.drag.destination);
+    this.drag.committed = !cancelled && this.drag.distance >= threshold;
+    this.target = this.limit(this.drag.committed ? this.drag.destination : this.drag.anchor);
     this.drag = null;
     this.startSettle(now);
   }

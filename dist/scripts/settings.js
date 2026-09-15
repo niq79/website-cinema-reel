@@ -22,8 +22,8 @@ export const SETTING_FIELDS = [
 ];
 
 export const SETTING_DESCRIPTIONS = Object.freeze({
-  scrollSensitivity: 'Multiplies wheel input before checking the commitment threshold. Higher values let a smaller swipe start the full transition. For touch dragging it also changes how far the card follows your hand.',
-  commitThreshold: 'Sets the input needed to launch a complete wheel transition, as a fraction of card spacing including the gap. Lower values respond to lighter swipes; zero triggers on the first event. Touch drags still settle on release.',
+  scrollSensitivity: 'Multiplies wheel and trackpad input before checking the commitment threshold. Higher values let a smaller wheel gesture start the full transition. Touchscreen dragging follows physical finger movement independently.',
+  commitThreshold: 'Sets the input needed to launch a complete wheel transition, as a fraction of card spacing including the gap. Lower values respond to lighter wheel gestures; zero triggers on the first event. Touchscreen drags use a separate 14% viewport release distance.',
   wheelPauseMs: 'Sets how long a small, uncommitted wheel gesture can wait for more input. Device timing may extend this interval. Once the threshold is crossed, the full animation begins immediately and ignores this delay.',
   transitionMs: 'Sets the maximum duration of the complete animation once a wheel gesture commits. The card slows smoothly into position with no release pause. A fresh gesture can interrupt it; touch dragging still finishes on release.',
   easePower: 'Shapes the deceleration into the destination. Higher values cover more distance early and spend longer slowing near the endpoint; lower values distribute movement more evenly.',

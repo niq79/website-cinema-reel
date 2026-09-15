@@ -107,7 +107,10 @@ export class CinemaReel {
     if (this.motion.moving && this.track.contains(document.activeElement)) this.viewport.focus({ preventScroll: true });
     this.frames.forEach(frame => {
       const active = !frame.dataset.duplicate && Number(frame.dataset.index) === this.index;
-      frame.inert = !active || this.motion.moving;
+      // Making the touched frame inert cancels its active pointer on mobile.
+      // Keep it interactive while the finger is down, then disable it during
+      // the automatic landing like the other navigation paths.
+      frame.inert = !active || (this.motion.moving && !this.motion.drag);
       frame.setAttribute('aria-hidden', String(!active));
       frame.classList.toggle('is-active', active);
     });
@@ -232,10 +235,10 @@ export class CinemaReel {
     });
 
     this.viewport.addEventListener('pointerdown', event => {
-      if (!event.isPrimary) { this.cancelPointer(); return; }
-      if (event.button !== 0 || this.dialog.open || this.cards.length < 2) return;
+      if (event.isPrimary === false) { this.cancelPointer(); return; }
+      if ((event.pointerType !== 'touch' && event.button !== 0) || this.dialog.open || this.cards.length < 2) return;
       if (event.target.closest('button, a')) return;
-      this.pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, lastY: event.clientY, dragging: false };
+      this.pointer = { id: event.pointerId, type: event.pointerType, x: event.clientX, y: event.clientY, lastY: event.clientY, dragging: false };
     });
     this.viewport.addEventListener('pointermove', event => {
       const pointer = this.pointer;
@@ -246,7 +249,10 @@ export class CinemaReel {
         if (Math.abs(dy) < 5 || Math.abs(dy) < Math.abs(dx) * 1.25) return;
         pointer.dragging = true;
         this.motion.beginDrag(performance.now());
-        this.viewport.setPointerCapture(event.pointerId);
+        // Touch pointers already have implicit capture. Moving that capture
+        // from the touched card to the viewport emits lostpointercapture and
+        // can cancel the gesture in mobile browsers.
+        if (pointer.type !== 'touch') this.viewport.setPointerCapture(event.pointerId);
       }
       this.motion.dragBy(pointer.lastY - event.clientY, this.pitch);
       pointer.lastY = event.clientY;
@@ -260,7 +266,7 @@ export class CinemaReel {
       if (this.pointer?.id === event.pointerId) this.cancelPointer();
     });
     this.viewport.addEventListener('lostpointercapture', event => {
-      if (this.pointer?.id === event.pointerId) this.cancelPointer();
+      if (event.target === this.viewport && this.pointer?.id === event.pointerId) this.cancelPointer();
     });
     this.viewport.addEventListener('pointerleave', event => {
       if (this.pointer?.id === event.pointerId && !this.viewport.hasPointerCapture(event.pointerId)) this.cancelPointer();
