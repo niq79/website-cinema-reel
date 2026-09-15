@@ -27,7 +27,7 @@ export const SETTING_DESCRIPTIONS = Object.freeze({
   wheelPauseMs: 'Sets how long a small, uncommitted wheel gesture can wait for more input. Device timing may extend this interval. Once the threshold is crossed, the full animation begins immediately and ignores this delay.',
   transitionMs: 'Sets the maximum duration of the complete animation once a wheel gesture commits. The card slows smoothly into position with no release pause. A fresh gesture can interrupt it; touch dragging still finishes on release.',
   easePower: 'Shapes the deceleration into the destination. Higher values cover more distance early and spend longer slowing near the endpoint; lower values distribute movement more evenly.',
-  gestureGapMs: 'Sets the quiet interval that guarantees the next wheel input starts a new one-card gesture. Lower values permit faster repeated advances but can make momentum easier to mistake for a fresh gesture.',
+  gestureGapMs: 'Sets the quiet interval required before wheel input can unlock another card. Lower values permit faster repeated advances but can let gaps inside trackpad momentum look like a new gesture.',
   textBlur: 'Sets the strongest blur applied to text as its card moves away from the center. It affects incoming and outgoing cards in both scroll directions.',
   textMotionBlur: 'Sets the minimum text blur while the reel is moving, including text near the center. It is capped by Maximum text blur and clears after movement ends.',
   textSharpnessMs: 'Controls how long the remaining motion blur takes to clear after the card finishes landing. Higher values leave a softer trailing resolve.',

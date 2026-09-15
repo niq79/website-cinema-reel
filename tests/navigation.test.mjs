@@ -87,20 +87,25 @@ test('a fresh gesture interrupts an unfinished landing immediately and selects t
   assert.equal(motion.position, 2);
 });
 
-test('renewed acceleration after decay and deliberate reversal count as fresh gestures', () => {
+test('renewed acceleration remains in the same gesture while pre-commit reversal can restart it', () => {
   const tracker = new GestureTracker();
   assert.equal(tracker.push(100, 0, 120), true);
   for (const [delta, time] of [[120, 8], [80, 16], [40, 32], [10, 48], [3, 64]]) assert.equal(tracker.push(delta, time, 120), false);
-  assert.equal(tracker.push(30, 80, 120), true);
+  assert.equal(tracker.push(30, 80, 120), false);
   assert.equal(tracker.push(-2, 88, 120), false);
   assert.equal(tracker.push(-20, 96, 120), true);
+});
+
+test('acceleration and reversal cannot unlock another card after commitment', () => {
   const motion = create({ loop: false });
   motion.position = motion.target = 2;
   motion.wheelBy(180, 800, 0);
-  motion.wheelBy(-180, 800, 8);
-  assert.equal(motion.target, 2);
+  for (const [delta, time] of [[80, 8], [20, 24], [3, 40], [60, 56], [-180, 72], [180, 88]]) {
+    assert.equal(motion.wheelBy(delta, 800, time), false);
+    assert.equal(motion.target, 3);
+  }
   motion.update(500);
-  assert.equal(motion.position, 2);
+  assert.equal(motion.position, 3);
 });
 
 test('subthreshold input does not displace the card; sensitivity changes commitment', () => {
