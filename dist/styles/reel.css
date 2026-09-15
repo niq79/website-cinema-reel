@@ -349,13 +349,8 @@ a {
   text-wrap:pretty;
 }
 
-.slide[data-layout=editorial] .card-media {
-  left:48%;
-  width:52%;
-}
-
 .slide[data-layout=editorial] .image-shade {
-  background:linear-gradient(90deg,#151614 0%,#151614 38%,#151614e6 48%,#15161415 76%),linear-gradient(0deg,#0a090855,transparent 30%);
+  background:linear-gradient(90deg,#151614d1 0%,#15161473 38%,#1516141a 68%,transparent 84%),linear-gradient(0deg,#0a090855,transparent 30%);
 }
 
 .slide[data-layout=editorial] .card-content {
@@ -708,10 +703,6 @@ a {
   }
   .detail-facts {
     grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-  .slide[data-layout=editorial] .card-media {
-    left:0;
-    width:100%;
   }
   .slide[data-layout=editorial] .image-shade {
     background:linear-gradient(0deg,#0d100fe8 0%,#0d100f99 60%,#0d100f44);
