@@ -2,6 +2,8 @@
 export const SETTING_FIELDS = [
   { key: 'scrollSensitivity', group: 'Motion', label: 'Scroll sensitivity', min: 0.25, max: 2.5, inputMin: 0.01, inputMax: 10, step: 0.05, value: 1, unit: '×' },
   { key: 'commitThreshold', group: 'Motion', label: 'Commit threshold', min: 0.05, max: 0.5, inputMin: 0, inputMax: 2, step: 0.01, value: 0.16, percent: true },
+  { key: 'touchSensitivity', group: 'Motion', label: 'Touch sensitivity', min: 0.5, max: 2, inputMin: 0.1, inputMax: 5, step: 0.05, value: 1.25, unit: '×' },
+  { key: 'touchThreshold', group: 'Motion', label: 'Touch threshold', min: 0.05, max: 0.3, inputMin: 0, inputMax: 1, step: 0.01, value: 0.14, percent: true },
   { key: 'wheelPauseMs', group: 'Motion', label: 'Landing response', min: 0, max: 120, inputMin: 0, inputMax: 2000, step: 5, value: 20, unit: ' ms' },
   { key: 'transitionMs', group: 'Motion', label: 'Landing duration', min: 0, max: 800, inputMin: 0, inputMax: 10000, step: 10, value: 320, unit: ' ms' },
   { key: 'easePower', group: 'Motion', label: 'Deceleration strength', min: 1.5, max: 5, inputMin: 0.1, inputMax: 20, step: 0.1, value: 3 },
@@ -23,7 +25,9 @@ export const SETTING_FIELDS = [
 
 export const SETTING_DESCRIPTIONS = Object.freeze({
   scrollSensitivity: 'Multiplies wheel and trackpad input before checking the commitment threshold. Higher values let a smaller wheel gesture start the full transition. Touchscreen dragging follows physical finger movement independently.',
-  commitThreshold: 'Sets the input needed to launch a complete wheel transition, as a fraction of card spacing including the gap. Lower values respond to lighter wheel gestures; zero triggers on the first event. Touchscreen drags use a separate 14% viewport release distance.',
+  commitThreshold: 'Sets the input needed to launch a complete wheel transition, as a fraction of card spacing including the gap. Lower values respond to lighter wheel gestures; zero triggers on the first event. Touchscreen dragging uses separate controls.',
+  touchSensitivity: 'Multiplies how far the card follows a finger during touchscreen dragging. Higher values create more card movement from the same physical swipe without changing the release distance needed to advance.',
+  touchThreshold: 'Sets the physical vertical swipe distance needed to advance on release, as a fraction of the viewport height. Lower values make shorter touchscreen swipes commit; zero commits any vertical drag.',
   wheelPauseMs: 'Sets how long a small, uncommitted wheel gesture can wait for more input. Device timing may extend this interval. Once the threshold is crossed, the full animation begins immediately and ignores this delay.',
   transitionMs: 'Sets the maximum duration of the complete animation once a wheel gesture commits. The card slows smoothly into position with no release pause. A fresh gesture can interrupt it; touch dragging still finishes on release.',
   easePower: 'Shapes the deceleration into the destination. Higher values cover more distance early and spend longer slowing near the endpoint; lower values distribute movement more evenly.',

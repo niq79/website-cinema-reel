@@ -211,6 +211,26 @@ test('touch release distance is independent of wheel sensitivity', () => {
   positions.forEach(position => close(position, positions[0]));
 });
 
+test('touch sensitivity and threshold tune separate parts of the swipe', () => {
+  const softer = create({ loop: false, touchSensitivity: 0.75 });
+  const stronger = create({ loop: false, touchSensitivity: 1.5 });
+  for (const motion of [softer, stronger]) {
+    motion.beginDrag(0);
+    motion.dragBy(80, 800);
+  }
+  assert.ok(stronger.position > softer.position, 'Higher sensitivity follows the finger farther');
+
+  const shortThreshold = create({ loop: false, touchThreshold: 0.08 });
+  const longThreshold = create({ loop: false, touchThreshold: 0.14 });
+  for (const motion of [shortThreshold, longThreshold]) {
+    motion.beginDrag(0);
+    motion.dragBy(80, 800);
+    motion.endDrag(20);
+  }
+  assert.equal(shortThreshold.index, 1);
+  assert.equal(longThreshold.index, 0);
+});
+
 test('finite ends, a single card, instant landing, and reduced motion stay usable', () => {
   const finite = create({ total: 3, loop: false });
   finite.wheelBy(-180, 800, 0);

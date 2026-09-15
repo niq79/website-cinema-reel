@@ -198,7 +198,7 @@ export class CinemaReel {
     const pointer = this.pointer;
     if (!pointer) return;
     this.pointer = null;
-    if (pointer.dragging) this.motion.endDrag(performance.now(), this.viewport.clientHeight * 0.14 / this.pitch, cancelled);
+    if (pointer.dragging) this.motion.endDrag(performance.now(), this.viewport.clientHeight * this.settings.touchThreshold / this.pitch, cancelled);
     if (this.viewport.hasPointerCapture(pointer.id)) this.viewport.releasePointerCapture(pointer.id);
     this.wake();
   }

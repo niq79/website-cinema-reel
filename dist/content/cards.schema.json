@@ -52,6 +52,20 @@
           "default": 0.16,
           "description": "Commit threshold"
         },
+        "touchSensitivity": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 5,
+          "default": 1.25,
+          "description": "Touch sensitivity"
+        },
+        "touchThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.14,
+          "description": "Touch threshold"
+        },
         "wheelPauseMs": {
           "type": "number",
           "minimum": 0,
